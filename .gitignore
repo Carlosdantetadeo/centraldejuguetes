@@ -1,0 +1,40 @@
+# logs (los de la raíz pueden contener connection strings — nunca commitear)
+debug.log
+web/*.log
+/*.log
+npm-debug.log*
+
+# tooling local de análisis (no forma parte del producto)
+analyze.py
+cli.py
+test.py
+SPECKIT.md
+
+# local screenshots
+web/.shots/
+
+# dependencies
+**/node_modules/
+
+# next.js build output
+web/.next/
+web/out/
+
+# env & secrets
+**/.env
+**/.env.*
+*.pem
+
+# typescript build info
+**/*.tsbuildinfo
+web/next-env.d.ts
+
+# os
+.DS_Store
+
+# deploy tooling (local)
+.vercel
+.netlify
+
+.vercel
+.env*

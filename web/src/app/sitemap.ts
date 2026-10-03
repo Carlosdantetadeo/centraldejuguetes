@@ -1,0 +1,33 @@
+import { getAllCategoriesForSitemap, getAllProductsForSitemap } from "@/lib/catalog";
+import { getSiteUrl } from "@/lib/utils";
+
+export default async function sitemap() {
+  const siteUrl = getSiteUrl();
+  const [categories, products] = await Promise.all([
+    getAllCategoriesForSitemap(),
+    getAllProductsForSitemap(),
+  ]);
+
+  return [
+    {
+      url: siteUrl,
+      lastModified: new Date(),
+    },
+    {
+      url: `${siteUrl}/buscar`,
+      lastModified: new Date(),
+    },
+    {
+      url: `${siteUrl}/privacidad`,
+      lastModified: new Date(),
+    },
+    ...categories.map((category) => ({
+      url: `${siteUrl}/categoria/${category.slug}`,
+      lastModified: category.updatedAt,
+    })),
+    ...products.map((product) => ({
+      url: `${siteUrl}/producto/${product.category.slug}/${product.slug}`,
+      lastModified: product.updatedAt,
+    })),
+  ];
+}
