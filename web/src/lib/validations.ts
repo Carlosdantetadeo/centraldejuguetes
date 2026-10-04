@@ -21,6 +21,8 @@ export const productSchema = z.object({
   slug: z.string().optional(),
   description: z.string().optional(),
   brand: z.string().optional(),
+  ageMin: z.coerce.number().int().min(0, "Edad inválida.").optional(),
+  ageMax: z.coerce.number().int().min(0, "Edad inválida.").optional(),
   measure: z.string().optional(),
   gauge: z.string().optional(),
   material: z.string().optional(),
@@ -111,5 +113,7 @@ export const bulkImportSchema = z.array(
     stock: z.coerce.number().int().min(0).default(0),
     description: z.string().optional().nullable(),
     brand: z.string().optional().nullable(),
+    age_min: z.coerce.number().int().min(0).optional().nullable(),
+    age_max: z.coerce.number().int().min(0).optional().nullable(),
   }),
 );

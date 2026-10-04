@@ -84,6 +84,10 @@ model Product {
   // feed de ChatGPT Shopping y recomendado por Google Merchant — ver
   // src/lib/feeds.ts.
   brand            String?
+  // Edad recomendada (años). Habilita guías "por edad" (GEO fase 4) y
+  // Product.audience en el JSON-LD — ver src/lib/jsonld.ts.
+  ageMin           Int?
+  ageMax           Int?
   measure          String?
   gauge            String?
   material         String?

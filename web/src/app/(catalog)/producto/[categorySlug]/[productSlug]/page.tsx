@@ -87,6 +87,8 @@ export default async function ProductPage({ params }: PageProps) {
             description: product.description,
             sku: product.sku,
             brand: product.brand,
+            ageMin: product.ageMin,
+            ageMax: product.ageMax,
             price: product.price,
             available: product.available,
             images: product.images,

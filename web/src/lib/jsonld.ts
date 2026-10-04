@@ -112,6 +112,8 @@ type ProductForJsonLd = {
   description?: string | null;
   sku?: string | null;
   brand?: string | null;
+  ageMin?: number | null;
+  ageMax?: number | null;
   price: number;
   available: boolean;
   images: { pathFull: string; altText: string }[];
@@ -133,6 +135,15 @@ export function buildProductJsonLd(
     ...(product.sku ? { sku: product.sku } : {}),
     ...(product.brand
       ? { brand: { "@type": "Brand", name: product.brand } }
+      : {}),
+    ...(product.ageMin != null || product.ageMax != null
+      ? {
+          audience: {
+            "@type": "PeopleAudience",
+            ...(product.ageMin != null ? { suggestedMinAge: product.ageMin } : {}),
+            ...(product.ageMax != null ? { suggestedMaxAge: product.ageMax } : {}),
+          },
+        }
       : {}),
     ...(product.images.length
       ? { image: product.images.map((img) => img.pathFull) }

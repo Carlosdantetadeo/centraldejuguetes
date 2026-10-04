@@ -43,9 +43,9 @@ export function BulkImport() {
     }
   }
 
-  const template = `name,category,measure,gauge,material,price,stock,description,brand
-Malla electrosoldada 4mm,mallas,2.40 x 6 m,4 mm,Acero,99,25,Malla electrosoldada de acero,
-Film estirable 50cm,film,50 cm x 300 m,23 micras,PEBD,85,10,Film estirable para embalaje,`;
+  const template = `name,category,measure,gauge,material,price,stock,description,brand,age_min,age_max
+Malla electrosoldada 4mm,mallas,2.40 x 6 m,4 mm,Acero,99,25,Malla electrosoldada de acero,,,
+Film estirable 50cm,film,50 cm x 300 m,23 micras,PEBD,85,10,Film estirable para embalaje,,,`;
 
   return (
     <div className="space-y-6">
@@ -129,7 +129,7 @@ Film estirable 50cm,film,50 cm x 300 m,23 micras,PEBD,85,10,Film estirable para 
             value={csvText}
             onChange={(e) => setCsvText(e.target.value)}
             rows={8}
-            placeholder="name,category,measure,gauge,material,price,stock,description,brand"
+            placeholder="name,category,measure,gauge,material,price,stock,description,brand,age_min,age_max"
             className="w-full rounded-xl border border-steel-200 bg-white px-4 py-3 font-mono text-xs text-steel-900 placeholder-steel-400 outline-none ring-brand-500 focus:ring-2"
           />
         </div>

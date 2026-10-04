@@ -16,6 +16,8 @@ type ProductFormProps = {
     slug?: string;
     description?: string | null;
     brand?: string | null;
+    ageMin?: number | null;
+    ageMax?: number | null;
     measure?: string | null;
     gauge?: string | null;
     material?: string | null;
@@ -112,6 +114,24 @@ export function ProductForm({ categories, action, initialValues }: ProductFormPr
           <Field label="Medida" name="measure" defaultValue={initialValues?.measure ?? ""} placeholder="Ej: 2m x 50m" />
           <Field label="Calibre" name="gauge" defaultValue={initialValues?.gauge ?? ""} placeholder="Ej: 200 galgas" />
           <Field label="Material" name="material" defaultValue={initialValues?.material ?? ""} placeholder="Ej: Polietileno" />
+        </div>
+
+        <div className="mt-5 grid gap-5 md:grid-cols-2">
+          <Field
+            label="Edad mínima recomendada (años, opcional)"
+            name="ageMin"
+            type="number"
+            defaultValue={initialValues?.ageMin?.toString() ?? ""}
+            placeholder="Ej: 3"
+            hint="Habilita guías por edad y el schema de audiencia para buscadores/IA"
+          />
+          <Field
+            label="Edad máxima recomendada (años, opcional)"
+            name="ageMax"
+            type="number"
+            defaultValue={initialValues?.ageMax?.toString() ?? ""}
+            placeholder="Ej: 6"
+          />
         </div>
       </div>
 
