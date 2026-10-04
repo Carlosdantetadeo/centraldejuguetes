@@ -329,6 +329,7 @@ export async function bulkImportAction(formData: FormData) {
           name,
           slug: slugify(name),
           description: row["description"] || null,
+          brand: row["brand"] || null,
           measure: row["measure"] || null,
           gauge: row["gauge"] || null,
           material: row["material"] || null,

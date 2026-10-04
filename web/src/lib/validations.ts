@@ -104,5 +104,6 @@ export const bulkImportSchema = z.array(
     price: z.coerce.number().nonnegative().default(0),
     stock: z.coerce.number().int().min(0).default(0),
     description: z.string().optional().nullable(),
+    brand: z.string().optional().nullable(),
   }),
 );
