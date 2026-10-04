@@ -153,6 +153,25 @@ export async function getAllCategoriesForSitemap() {
   });
 }
 
+// Fuente única para los feeds de producto (Google Merchant / ChatGPT
+// Shopping — GEO fase 3). Trae todo lo que los builders necesitan evaluar.
+export async function getAllProductsForFeeds() {
+  return prisma.product.findMany({
+    select: {
+      id: true,
+      name: true,
+      sku: true,
+      slug: true,
+      description: true,
+      price: true,
+      stock: true,
+      available: true,
+      images: { orderBy: { sortOrder: "asc" }, select: { pathFull: true } },
+      category: { select: { name: true, slug: true } },
+    },
+  });
+}
+
 export async function getAdminStats() {
   const [products, categories, outOfStock, featured] = await Promise.all([
     prisma.product.count(),
