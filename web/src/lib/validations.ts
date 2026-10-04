@@ -89,6 +89,12 @@ export const siteSettingsSchema = z.object({
   legalText: optionalText,
 });
 
+export const faqItemSchema = z.object({
+  question: z.string().trim().min(5, "La pregunta es obligatoria."),
+  answer: z.string().trim().min(5, "La respuesta es obligatoria."),
+  sortOrder: z.coerce.number().int().default(0),
+});
+
 export const imageAltSchema = z.object({
   altText: z.string().min(3, "La descripción de la imagen es obligatoria."),
 });

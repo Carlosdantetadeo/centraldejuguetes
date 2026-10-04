@@ -21,6 +21,10 @@ export default async function sitemap() {
       url: `${siteUrl}/privacidad`,
       lastModified: new Date(),
     },
+    {
+      url: `${siteUrl}/preguntas-frecuentes`,
+      lastModified: new Date(),
+    },
     ...categories.map((category) => ({
       url: `${siteUrl}/categoria/${category.slug}`,
       lastModified: category.updatedAt,

@@ -7,7 +7,13 @@ import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { deleteImageFiles, uploadBrandingAsset } from "@/lib/images";
 import { slugify } from "@/lib/utils";
-import { categorySchema, priceTierSchema, productSchema, siteSettingsSchema } from "@/lib/validations";
+import {
+  categorySchema,
+  faqItemSchema,
+  priceTierSchema,
+  productSchema,
+  siteSettingsSchema,
+} from "@/lib/validations";
 
 function revalidateCatalog() {
   revalidatePath("/");
@@ -347,4 +353,38 @@ export async function bulkImportAction(formData: FormData) {
 
   revalidateCatalog();
   return results;
+}
+
+export async function saveFaqAction(formData: FormData) {
+  await requireAdmin();
+
+  const parsed = faqItemSchema.safeParse({
+    question: formData.get("question"),
+    answer: formData.get("answer"),
+    sortOrder: formData.get("sortOrder") || 0,
+  });
+
+  if (!parsed.success) {
+    redirect("/admin/faq?error=invalid");
+  }
+
+  const faqId = formData.get("faqId")?.toString();
+  if (faqId) {
+    await prisma.faqItem.update({ where: { id: faqId }, data: parsed.data });
+  } else {
+    await prisma.faqItem.create({ data: parsed.data });
+  }
+
+  revalidatePath("/preguntas-frecuentes");
+  redirect("/admin/faq");
+}
+
+export async function deleteFaqAction(formData: FormData) {
+  await requireAdmin();
+  const faqId = formData.get("faqId")?.toString();
+  if (!faqId) return;
+
+  await prisma.faqItem.delete({ where: { id: faqId } });
+  revalidatePath("/preguntas-frecuentes");
+  redirect("/admin/faq");
 }

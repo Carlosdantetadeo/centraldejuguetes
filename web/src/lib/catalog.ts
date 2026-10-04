@@ -211,6 +211,10 @@ export async function getProductById(id: string) {
   });
 }
 
+export async function getFaqItems() {
+  return prisma.faqItem.findMany({ orderBy: { sortOrder: "asc" } });
+}
+
 export async function getAllCategoriesAdmin() {
   return prisma.category.findMany({
     orderBy: [{ parentId: "asc" }, { sortOrder: "asc" }],

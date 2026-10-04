@@ -90,6 +90,23 @@ export function buildItemListJsonLd(items: ListItem[]) {
   };
 }
 
+// Solo a partir de preguntas/respuestas reales editadas en el panel —
+// nunca contenido generado o inventado (ver prompt-geo §1, prohibiciones).
+export function buildFaqPageJsonLd(items: { question: string; answer: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: items.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer,
+      },
+    })),
+  };
+}
+
 type ProductForJsonLd = {
   name: string;
   description?: string | null;

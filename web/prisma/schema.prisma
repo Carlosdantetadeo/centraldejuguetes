@@ -106,6 +106,21 @@ model Product {
   @@index([featured])
 }
 
+// Preguntas frecuentes editables desde el panel (GEO fase 4: contenido
+// citable + FAQPage JSON-LD). Sin categorías/grupos — una lista simple
+// ordenada por sortOrder, como pide el prompt (nada de contenido delgado
+// ni respuestas duplicadas inventadas por código).
+model FaqItem {
+  id        String   @id @default(cuid())
+  question  String
+  answer    String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sortOrder])
+}
+
 model ProductImage {
   id           String  @id @default(cuid())
   productId    String
