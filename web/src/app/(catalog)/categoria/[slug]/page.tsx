@@ -4,6 +4,9 @@ import { ProductCard } from "@/components/catalog/ProductCard";
 import { FilterSidebar, type FilterCounts } from "@/components/catalog/FilterSidebar";
 import { getProductsByCategorySlug } from "@/lib/catalog";
 import { getSiteSettings } from "@/lib/settings";
+import { JsonLd } from "@/components/JsonLd";
+import { buildBreadcrumbJsonLd, buildItemListJsonLd } from "@/lib/jsonld";
+import { getSiteUrl } from "@/lib/utils";
 
 export const revalidate = 60;
 
@@ -80,8 +83,23 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
 
   const hasActiveFilters = filters.disponible || filters.precio || filters.foto;
 
+  const siteUrl = getSiteUrl();
+  const breadcrumbItems = [
+    { name: "Inicio", url: siteUrl },
+    { name: category.name, url: `${siteUrl}/categoria/${category.slug}` },
+  ];
+  const itemListItems = filtered.map((p) => ({
+    name: p.name,
+    url: `${siteUrl}/producto/${category.slug}/${p.slug}`,
+  }));
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
+      <JsonLd data={buildBreadcrumbJsonLd(breadcrumbItems)} />
+      {itemListItems.length > 0 && (
+        <JsonLd data={buildItemListJsonLd(itemListItems)} />
+      )}
+
       {/* Breadcrumb */}
       <nav className="mb-4 flex items-center gap-2 text-sm text-steel-500">
         <a href="/" className="hover:text-brand-700 transition-colors">Inicio</a>

@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Archivo, DM_Sans, JetBrains_Mono } from "next/font/google";
 import { getSiteSettings } from "@/lib/settings";
 import { brandThemeCss } from "@/lib/theme";
+import { JsonLd } from "@/components/JsonLd";
+import { buildOrganizationJsonLd, buildWebSiteJsonLd } from "@/lib/jsonld";
 import "./globals.css";
 
 export const viewport: Viewport = {
@@ -69,6 +71,8 @@ export default async function RootLayout({
       <head>
         {/* Tema por instancia: rampa de marca en el head → sin flash de color */}
         <style dangerouslySetInnerHTML={{ __html: brandThemeCss(settings) }} />
+        <JsonLd data={buildOrganizationJsonLd(settings)} />
+        <JsonLd data={buildWebSiteJsonLd(settings)} />
       </head>
       <body className="min-h-full bg-white font-sans text-steel-900 antialiased">
         {children}

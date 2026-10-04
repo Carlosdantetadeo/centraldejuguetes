@@ -5,7 +5,9 @@ import { ProductPurchase } from "@/components/catalog/ProductPurchase";
 import { ProductViewTracker } from "@/components/catalog/ProductViewTracker";
 import { getProductBySlugs } from "@/lib/catalog";
 import { getSiteSettings } from "@/lib/settings";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, getSiteUrl } from "@/lib/utils";
+import { JsonLd } from "@/components/JsonLd";
+import { buildBreadcrumbJsonLd, buildProductJsonLd } from "@/lib/jsonld";
 
 export const revalidate = 60;
 
@@ -60,6 +62,14 @@ export default async function ProductPage({ params }: PageProps) {
 
   const sizes = parseSizes(product.measure);
 
+  const siteUrl = getSiteUrl();
+  const productUrl = `${siteUrl}/producto/${categorySlug}/${productSlug}`;
+  const breadcrumbItems = [
+    { name: "Inicio", url: siteUrl },
+    { name: product.category.name, url: `${siteUrl}/categoria/${product.category.slug}` },
+    { name: product.name, url: productUrl },
+  ];
+
   // Detalles técnicos: si `measure` son tallas, se muestran arriba como
   // selector y no se repiten aquí; solo quedan calibre/material.
   const specs = [
@@ -70,6 +80,22 @@ export default async function ProductPage({ params }: PageProps) {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:py-10">
+      <JsonLd
+        data={buildProductJsonLd(
+          {
+            name: product.name,
+            description: product.description,
+            sku: product.sku,
+            price: product.price,
+            available: product.available,
+            images: product.images,
+            url: productUrl,
+          },
+          settings,
+        )}
+      />
+      <JsonLd data={buildBreadcrumbJsonLd(breadcrumbItems)} />
+
       {/* US-14: registra la vista sin depender de la caché ISR */}
       <ProductViewTracker productId={product.id} />
 

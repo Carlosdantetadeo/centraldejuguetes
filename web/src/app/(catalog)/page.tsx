@@ -7,6 +7,8 @@ import {
 } from "@/components/catalog/FilterSidebar";
 import { getGenderNav, getStorefrontProducts } from "@/lib/catalog";
 import { getSiteSettings } from "@/lib/settings";
+import { JsonLd } from "@/components/JsonLd";
+import { buildStoreJsonLd } from "@/lib/jsonld";
 
 export const revalidate = 60;
 
@@ -89,6 +91,8 @@ export default async function HomePage({ searchParams }: PageProps) {
 
   return (
     <>
+      <JsonLd data={buildStoreJsonLd(settings)} />
+
       {/* Hero banner */}
       <section className={`relative overflow-hidden ${settings.heroImageUrl ? "bg-steel-900" : "bg-brand-600"}`}>
         {settings.heroImageUrl ? (
