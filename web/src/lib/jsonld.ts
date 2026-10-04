@@ -113,7 +113,9 @@ export function buildProductJsonLd(
     name: product.name,
     ...(product.description ? { description: product.description } : {}),
     ...(product.sku ? { sku: product.sku } : {}),
-    image: product.images.map((img) => img.pathFull),
+    ...(product.images.length
+      ? { image: product.images.map((img) => img.pathFull) }
+      : {}),
     url: product.url,
     offers: {
       "@type": "Offer",
