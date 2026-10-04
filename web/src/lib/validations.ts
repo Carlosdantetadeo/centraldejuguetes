@@ -20,6 +20,7 @@ export const productSchema = z.object({
   name: z.string().min(2, "El nombre es obligatorio."),
   slug: z.string().optional(),
   description: z.string().optional(),
+  brand: z.string().optional(),
   measure: z.string().optional(),
   gauge: z.string().optional(),
   material: z.string().optional(),

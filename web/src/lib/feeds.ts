@@ -8,6 +8,7 @@ export type FeedProduct = {
   sku: string | null;
   slug: string;
   description: string | null;
+  brand: string | null;
   price: number;
   stock: number;
   available: boolean;
@@ -34,11 +35,8 @@ function availability(p: FeedProduct): "in_stock" | "out_of_stock" {
   return p.available && p.stock > 0 ? "in_stock" : "out_of_stock";
 }
 
-// Esta plantilla no tiene (todavía) campo `brand` por producto — ver
-// SPECKIT §6.2 (migración pendiente `brandLicense`). No se inventa un
-// valor: se evalúa tal cual está hoy el schema.
-function hasBrand(_p: FeedProduct): boolean {
-  return false;
+function hasBrand(p: FeedProduct): boolean {
+  return Boolean(p.brand?.trim());
 }
 
 export type FeedExclusion = {
@@ -72,7 +70,7 @@ export function evaluateProductForFeeds(p: FeedProduct): {
   // `brand` es requerido por la spec de OpenAI sin excepción; Google lo
   // tolera si se declara `identifier_exists=no` (ver buildGoogleFeedXml).
   if (!hasBrand(p)) {
-    openai.push("sin marca (brand) — campo no existe aún en el schema");
+    openai.push("sin marca (brand)");
   }
 
   return { google, openai };
@@ -113,7 +111,7 @@ export function buildGoogleFeedXml(
     <g:availability>${availability(p)}</g:availability>
     <g:price>${p.price.toFixed(2)} ${settings.currency}</g:price>
     <g:condition>new</g:condition>
-    <g:identifier_exists>no</g:identifier_exists>
+    ${hasBrand(p) ? `<g:brand>${xmlEscape(p.brand!.trim())}</g:brand>\n    ` : ""}<g:identifier_exists>no</g:identifier_exists>
   </item>`;
     })
     .join("\n");
@@ -145,6 +143,7 @@ export function buildOpenAiFeedJsonl(
         title: p.name.slice(0, 150),
         description: (p.description ?? p.name).slice(0, 5000),
         url: productUrl(p),
+        brand: p.brand!.trim(),
         image_url: p.images[0].pathFull,
         price: `${p.price.toFixed(2)} ${settings.currency}`,
         availability: availability(p),

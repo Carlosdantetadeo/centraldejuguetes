@@ -15,6 +15,7 @@ type ProductFormProps = {
     name?: string;
     slug?: string;
     description?: string | null;
+    brand?: string | null;
     measure?: string | null;
     gauge?: string | null;
     material?: string | null;
@@ -80,12 +81,19 @@ export function ProductForm({ categories, action, initialValues }: ProductFormPr
           />
         </div>
 
-        <div className="mt-5">
+        <div className="mt-5 grid gap-5 md:grid-cols-2">
           <Field
             label="Descripción"
             name="description"
             defaultValue={initialValues?.description ?? ""}
             textarea
+          />
+          <Field
+            label="Marca (opcional)"
+            name="brand"
+            defaultValue={initialValues?.brand ?? ""}
+            placeholder="Ej: Melissa & Doug"
+            hint="Necesaria para que el producto entre en el feed de ChatGPT Shopping"
           />
         </div>
       </div>

@@ -23,6 +23,7 @@ export async function saveProductAction(formData: FormData) {
     name: formData.get("name"),
     slug: formData.get("slug") || undefined,
     description: formData.get("description") || undefined,
+    brand: formData.get("brand") || undefined,
     measure: formData.get("measure") || undefined,
     gauge: formData.get("gauge") || undefined,
     material: formData.get("material") || undefined,

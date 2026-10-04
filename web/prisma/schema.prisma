@@ -80,6 +80,10 @@ model Product {
   sku              String?
   slug             String
   description      String?
+  // Marca/licencia del producto (ej. "Melissa & Doug"). Requerido por el
+  // feed de ChatGPT Shopping y recomendado por Google Merchant — ver
+  // src/lib/feeds.ts.
+  brand            String?
   measure          String?
   gauge            String?
   material         String?

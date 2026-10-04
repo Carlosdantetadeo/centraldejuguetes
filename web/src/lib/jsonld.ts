@@ -94,6 +94,7 @@ type ProductForJsonLd = {
   name: string;
   description?: string | null;
   sku?: string | null;
+  brand?: string | null;
   price: number;
   available: boolean;
   images: { pathFull: string; altText: string }[];
@@ -113,6 +114,9 @@ export function buildProductJsonLd(
     name: product.name,
     ...(product.description ? { description: product.description } : {}),
     ...(product.sku ? { sku: product.sku } : {}),
+    ...(product.brand
+      ? { brand: { "@type": "Brand", name: product.brand } }
+      : {}),
     ...(product.images.length
       ? { image: product.images.map((img) => img.pathFull) }
       : {}),

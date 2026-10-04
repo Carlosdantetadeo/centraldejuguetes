@@ -163,6 +163,7 @@ export async function getAllProductsForFeeds() {
       sku: true,
       slug: true,
       description: true,
+      brand: true,
       price: true,
       stock: true,
       available: true,
