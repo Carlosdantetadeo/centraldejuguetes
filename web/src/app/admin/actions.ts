@@ -11,6 +11,7 @@ import {
   campaignSchema,
   categorySchema,
   faqItemSchema,
+  geoQuerySchema,
   priceTierSchema,
   productSchema,
   siteSettingsSchema,
@@ -452,6 +453,44 @@ export async function saveFaqAction(formData: FormData) {
 
   revalidatePath("/preguntas-frecuentes");
   redirect("/admin/faq");
+}
+
+export async function saveGeoQueryAction(formData: FormData) {
+  await requireAdmin();
+
+  const parsed = geoQuerySchema.safeParse({
+    query: formData.get("query"),
+    foundChatGpt: formData.get("foundChatGpt") === "on",
+    foundGemini: formData.get("foundGemini") === "on",
+    foundPerplexity: formData.get("foundPerplexity") === "on",
+    foundCopilot: formData.get("foundCopilot") === "on",
+    foundClaude: formData.get("foundClaude") === "on",
+    notes: formData.get("notes") || undefined,
+  });
+
+  if (!parsed.success) {
+    redirect("/admin/geo-queries?error=invalid");
+  }
+
+  const geoQueryId = formData.get("geoQueryId")?.toString();
+  const data = { ...parsed.data, lastCheckedAt: new Date() };
+
+  if (geoQueryId) {
+    await prisma.geoQuery.update({ where: { id: geoQueryId }, data });
+  } else {
+    await prisma.geoQuery.create({ data });
+  }
+
+  redirect("/admin/geo-queries");
+}
+
+export async function deleteGeoQueryAction(formData: FormData) {
+  await requireAdmin();
+  const geoQueryId = formData.get("geoQueryId")?.toString();
+  if (!geoQueryId) return;
+
+  await prisma.geoQuery.delete({ where: { id: geoQueryId } });
+  redirect("/admin/geo-queries");
 }
 
 export async function saveCampaignAction(formData: FormData) {

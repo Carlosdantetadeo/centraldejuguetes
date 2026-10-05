@@ -185,6 +185,38 @@ model WebPreorder {
   createdAt   DateTime @default(now())
 }
 
+// Log de visitas de bots de búsqueda/fetch de IA (GEO fase 5 §3). Se
+// escribe desde src/proxy.ts (Next 16: proxy corre en runtime Node.js
+// por defecto, no Edge — Prisma funciona ahí sin driver especial).
+// No se registra `status` real: el proxy corre antes del render, no ve
+// la respuesta final — ver nota en proxy.ts.
+model BotVisit {
+  id        String   @id @default(cuid())
+  botName   String
+  userAgent String
+  path      String
+  createdAt DateTime @default(now())
+
+  @@index([botName, createdAt])
+}
+
+// Panel de consultas objetivo (GEO fase 5 §4): el admin anota manualmente
+// si la tienda aparece/es citada en cada motor. Revisión mensual manual
+// a propósito — el prompt prohíbe automatizar scraping de los motores.
+model GeoQuery {
+  id            String    @id @default(cuid())
+  query         String
+  foundChatGpt  Boolean   @default(false)
+  foundGemini   Boolean   @default(false)
+  foundPerplexity Boolean @default(false)
+  foundCopilot  Boolean   @default(false)
+  foundClaude   Boolean   @default(false)
+  notes         String?
+  lastCheckedAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
 model FaqItem {
   id        String   @id @default(cuid())
   question  String

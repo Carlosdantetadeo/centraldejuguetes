@@ -7,7 +7,7 @@ import { captureUtmFromUrl } from "@/lib/utm";
 // gclid de la URL de la primera visita (prompt-frontend §8).
 export function UtmCapture() {
   useEffect(() => {
-    captureUtmFromUrl(window.location.search);
+    captureUtmFromUrl(window.location.search, document.referrer);
   }, []);
   return null;
 }

@@ -34,3 +34,40 @@ export const SORT_OPTIONS = [
 ] as const;
 
 export const PAGE_SIZE = 24;
+
+// Bots de búsqueda/fetch por usuario de motores de IA + buscadores
+// clásicos (GEO fase 1: robots.ts los permite explícito; GEO fase 5:
+// proxy.ts registra sus visitas — ver src/app/admin/(protected)/bots).
+export const AI_SEARCH_AGENTS = [
+  "OAI-SearchBot",
+  "ChatGPT-User",
+  "Claude-SearchBot",
+  "Claude-User",
+  "PerplexityBot",
+  "Perplexity-User",
+  "Googlebot",
+  "Bingbot",
+] as const;
+
+// Bots de entrenamiento (alimentan modelos, no búsquedas en vivo). Se
+// permiten por defecto en robots.ts — decisión del cliente, ver SPECKIT §9.
+export const AI_TRAINING_AGENTS = [
+  "GPTBot",
+  "ClaudeBot",
+  "Google-Extended",
+  "Applebot-Extended",
+  "CCBot",
+] as const;
+
+// Dominios de motores de IA que generan tráfico vía link directo (no
+// bot/crawler, sino un humano haciendo clic en una respuesta de chat).
+// GEO fase 5 §2: se usan para atribuir pre-pedidos a tráfico de IA
+// aunque no venga con utm_source explícito.
+export const AI_REFERRER_DOMAINS = [
+  "chatgpt.com",
+  "chat.openai.com",
+  "perplexity.ai",
+  "gemini.google.com",
+  "copilot.microsoft.com",
+  "claude.ai",
+] as const;

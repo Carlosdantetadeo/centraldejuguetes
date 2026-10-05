@@ -101,6 +101,16 @@ export const siteSettingsSchema = z.object({
   legalText: optionalText,
 });
 
+export const geoQuerySchema = z.object({
+  query: z.string().trim().min(3, "La consulta es obligatoria."),
+  foundChatGpt: z.coerce.boolean().default(false),
+  foundGemini: z.coerce.boolean().default(false),
+  foundPerplexity: z.coerce.boolean().default(false),
+  foundCopilot: z.coerce.boolean().default(false),
+  foundClaude: z.coerce.boolean().default(false),
+  notes: optionalText,
+});
+
 export const campaignSchema = z.object({
   title: z.string().trim().min(2, "El título es obligatorio."),
   subtitle: optionalText,

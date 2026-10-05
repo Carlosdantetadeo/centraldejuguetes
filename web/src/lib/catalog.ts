@@ -250,6 +250,24 @@ export async function getAllCampaignsAdmin() {
   return prisma.campaign.findMany({ orderBy: { startsAt: "desc" } });
 }
 
+type BotWeekRow = { botName: string; week: Date; count: bigint };
+
+// GEO fase 5 §3: visitas por bot y por semana, últimos 90 días.
+export async function getBotVisitStats() {
+  const rows = await prisma.$queryRaw<BotWeekRow[]>`
+    SELECT "botName", date_trunc('week', "createdAt") AS week, count(*) AS count
+    FROM "BotVisit"
+    WHERE "createdAt" > now() - interval '90 days'
+    GROUP BY "botName", week
+    ORDER BY week DESC, "botName" ASC
+  `;
+  return rows.map((r) => ({ ...r, count: Number(r.count) }));
+}
+
+export async function getAllGeoQueriesAdmin() {
+  return prisma.geoQuery.findMany({ orderBy: { createdAt: "asc" } });
+}
+
 export async function getPublishedTestimonials() {
   return prisma.testimonial.findMany({
     where: { published: true },
