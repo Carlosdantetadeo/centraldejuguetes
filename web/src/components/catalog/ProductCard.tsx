@@ -12,6 +12,9 @@ type ProductCardProps = {
   measure?: string | null;
   gauge?: string | null;
   price: number;
+  stock?: number;
+  ageMin?: number | null;
+  ageMax?: number | null;
   available: boolean;
   categorySlug: string;
   image?: {
@@ -29,6 +32,9 @@ export async function ProductCard({
   measure,
   gauge,
   price,
+  stock,
+  ageMin,
+  ageMax,
   available,
   categorySlug,
   image,
@@ -36,6 +42,14 @@ export async function ProductCard({
   const settings = await getSiteSettings();
   const specs = [measure, gauge].filter(Boolean).join(" · ");
   const productPath = `/producto/${categorySlug}/${slug}`;
+  // Solo se muestra si el stock real es bajo — nunca un número inventado.
+  const lowStock = available && typeof stock === "number" && stock > 0 && stock <= 5;
+  const ageLabel =
+    ageMin != null && ageMax != null
+      ? ageMin === ageMax
+        ? `${ageMin} años`
+        : `${ageMin}–${ageMax} años`
+      : null;
 
   return (
     <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-steel-200 bg-white transition-all duration-300 hover:border-brand-300 hover:shadow-xl hover:shadow-steel-900/8 hover:-translate-y-0.5">
@@ -43,7 +57,7 @@ export async function ProductCard({
       {available ? (
         <span className="absolute right-3 top-3 z-10 inline-flex items-center gap-1 rounded-full bg-emerald-500/90 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-sm">
           <span className="h-1.5 w-1.5 rounded-full bg-white" />
-          En stock
+          {lowStock ? `Últimas ${stock} unidades` : "En stock"}
         </span>
       ) : (
         <span className="absolute right-3 top-3 z-10 rounded-full bg-steel-900/90 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-sm">
@@ -84,6 +98,9 @@ export async function ProductCard({
           </h3>
           {specs ? (
             <p className="mt-1 font-mono text-xs text-steel-500">{specs}</p>
+          ) : null}
+          {ageLabel ? (
+            <p className="mt-1 text-xs font-medium text-brand-600">{ageLabel}</p>
           ) : null}
         </div>
       </Link>

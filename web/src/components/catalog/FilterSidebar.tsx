@@ -2,19 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-
-const PRICE_RANGES = [
-  { label: "Hasta S/ 50", value: "0-50" },
-  { label: "S/ 50 – S/ 200", value: "50-200" },
-  { label: "S/ 200 – S/ 500", value: "200-500" },
-  { label: "Más de S/ 500", value: "500-99999" },
-] as const;
+import { AGE_RANGES, PRICE_RANGES } from "@/lib/constants";
 
 export type FilterCounts = {
   total: number;
   disponible: number;
   conFoto: number;
   prices: Record<string, number>;
+  ages: Record<string, number>;
 };
 
 export type CategoryOption = {
@@ -24,28 +19,40 @@ export type CategoryOption = {
   imageUrl?: string | null;
 };
 
+export type BrandOption = {
+  name: string;
+  count: number;
+};
+
 type Props = {
   counts: FilterCounts;
   categories?: CategoryOption[];
+  brands?: BrandOption[];
 };
 
-export function FilterSidebar({ counts, categories }: Props) {
+export function FilterSidebar({ counts, categories, brands }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isFloating, setIsFloating] = useState(false);
 
-  const activeDisponible = searchParams.get("disponible") === "1";
+  // "Solo disponibles" está activo por defecto (prompt-frontend §5): hay
+  // que pasar disponible=0 explícito para ver también los sin stock.
+  const activeDisponible = searchParams.get("disponible") !== "0";
   const activePrecio = searchParams.get("precio") ?? "";
+  const activeEdad = searchParams.get("edad") ?? "";
   const activeFoto = searchParams.get("foto") === "1";
   const activeCategoria = searchParams.get("categoria") ?? "";
+  const activeMarca = searchParams.get("marca") ?? "";
 
   const activeCount = [
-    activeDisponible,
+    !activeDisponible,
     !!activePrecio,
+    !!activeEdad,
     activeFoto,
     !!activeCategoria,
+    !!activeMarca,
   ].filter(Boolean).length;
 
   useEffect(() => {
@@ -127,21 +134,21 @@ export function FilterSidebar({ counts, categories }: Props) {
         </section>
       )}
 
-      {/* Disponibilidad */}
+      {/* Disponibilidad — "Con stock" es el default */}
       <section>
         <h3 className="mb-3 text-[11px] font-semibold text-steel-500">
           Disponibilidad
         </h3>
         <div className="space-y-2.5">
           {[
-            { label: `Todos (${counts.total})`, value: null },
-            { label: `Con stock (${counts.disponible})`, value: "1" },
+            { label: `Con stock (${counts.disponible})`, value: null },
+            { label: `Ver todos (${counts.total})`, value: "0" },
           ].map(({ label, value }) => (
             <label key={label} className="flex cursor-pointer items-center gap-2.5">
               <input
                 type="radio"
                 name="disponible"
-                checked={value === null ? !activeDisponible : activeDisponible}
+                checked={value === null ? activeDisponible : !activeDisponible}
                 onChange={() => set("disponible", value)}
                 className="h-4 w-4 accent-brand-600"
               />
@@ -150,6 +157,82 @@ export function FilterSidebar({ counts, categories }: Props) {
           ))}
         </div>
       </section>
+
+      {/* Edad */}
+      {Object.values(counts.ages).some((c) => c > 0) && (
+        <section>
+          <h3 className="mb-3 text-[11px] font-semibold text-steel-500">
+            Edad
+          </h3>
+          <div className="space-y-2.5">
+            <label className="flex cursor-pointer items-center gap-2.5">
+              <input
+                type="radio"
+                name="edad"
+                checked={!activeEdad}
+                onChange={() => set("edad", null)}
+                className="h-4 w-4 accent-brand-600"
+              />
+              <span className="text-sm text-steel-700">Todas las edades</span>
+            </label>
+            {AGE_RANGES.map((range) => {
+              const count = counts.ages[range.value] ?? 0;
+              if (count === 0) return null;
+              return (
+                <label key={range.value} className="flex cursor-pointer items-center gap-2.5">
+                  <input
+                    type="radio"
+                    name="edad"
+                    checked={activeEdad === range.value}
+                    onChange={() => set("edad", range.value)}
+                    className="h-4 w-4 accent-brand-600"
+                  />
+                  <span className="text-sm text-steel-700">
+                    {range.label}
+                    <span className="ml-1 text-steel-400">({count})</span>
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* Marca */}
+      {brands && brands.length > 0 && (
+        <section>
+          <h3 className="mb-3 text-[11px] font-semibold text-steel-500">
+            Marca
+          </h3>
+          <div className="space-y-2.5">
+            <label className="flex cursor-pointer items-center gap-2.5">
+              <input
+                type="radio"
+                name="marca"
+                checked={!activeMarca}
+                onChange={() => set("marca", null)}
+                className="h-4 w-4 accent-brand-600"
+              />
+              <span className="text-sm text-steel-700">Todas las marcas</span>
+            </label>
+            {brands.map((b) => (
+              <label key={b.name} className="flex cursor-pointer items-center gap-2.5">
+                <input
+                  type="radio"
+                  name="marca"
+                  checked={activeMarca === b.name}
+                  onChange={() => set("marca", b.name)}
+                  className="h-4 w-4 accent-brand-600"
+                />
+                <span className="text-sm text-steel-700">
+                  {b.name}
+                  <span className="ml-1 text-steel-400">({b.count})</span>
+                </span>
+              </label>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Precio */}
       <section>

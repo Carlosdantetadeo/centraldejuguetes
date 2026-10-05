@@ -1,8 +1,15 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/catalog/ProductCard";
-import { FilterSidebar, type FilterCounts } from "@/components/catalog/FilterSidebar";
+import {
+  FilterSidebar,
+  type FilterCounts,
+  type BrandOption,
+} from "@/components/catalog/FilterSidebar";
+import { SortSelect } from "@/components/catalog/SortSelect";
+import { Pagination } from "@/components/catalog/Pagination";
 import { getProductsByCategorySlug } from "@/lib/catalog";
+import { AGE_RANGES, PAGE_SIZE, PRICE_RANGES } from "@/lib/constants";
 import { getSiteSettings } from "@/lib/settings";
 import { JsonLd } from "@/components/JsonLd";
 import { buildBreadcrumbJsonLd, buildItemListJsonLd } from "@/lib/jsonld";
@@ -10,18 +17,15 @@ import { getSiteUrl } from "@/lib/utils";
 
 export const revalidate = 60;
 
-const PRICE_RANGES = [
-  { value: "0-50", min: 0, max: 50 },
-  { value: "50-200", min: 50, max: 200 },
-  { value: "200-500", min: 200, max: 500 },
-  { value: "500-99999", min: 500, max: 99999 },
-] as const;
-
 type PageProps = {
   params: Promise<{ slug: string }>;
   searchParams: Promise<{
     disponible?: string;
     precio?: string;
+    edad?: string;
+    marca?: string;
+    orden?: string;
+    pagina?: string;
     foto?: string;
   }>;
 };
@@ -53,10 +57,19 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
 
   if (!category) notFound();
 
+  const brandMap = new Map<string, number>();
+  for (const p of products) {
+    if (!p.brand) continue;
+    brandMap.set(p.brand, (brandMap.get(p.brand) ?? 0) + 1);
+  }
+  const brandOptions: BrandOption[] = [...brandMap.entries()]
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count);
+
   // Counts para el sidebar (sobre todos los productos, sin filtrar)
   const counts: FilterCounts = {
     total: products.length,
-    disponible: products.filter((p) => p.available).length,
+    disponible: products.filter((p) => p.available && p.stock > 0).length,
     conFoto: products.filter((p) => p.images.length > 0).length,
     prices: Object.fromEntries(
       PRICE_RANGES.map(({ value, min, max }) => [
@@ -64,12 +77,20 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
         products.filter((p) => p.price >= min && p.price < max).length,
       ]),
     ),
+    ages: Object.fromEntries(
+      AGE_RANGES.map((range) => [
+        range.value,
+        products.filter(
+          (p) => p.ageMin != null && p.ageMax != null && p.ageMin <= range.max && p.ageMax >= range.min,
+        ).length,
+      ]),
+    ),
   };
 
-  // Aplicar filtros
+  // Aplicar filtros — "con stock" es el default (prompt-frontend §5).
   let filtered = products;
-  if (filters.disponible === "1") {
-    filtered = filtered.filter((p) => p.available);
+  if (filters.disponible !== "0") {
+    filtered = filtered.filter((p) => p.available && p.stock > 0);
   }
   if (filters.precio) {
     const range = PRICE_RANGES.find((r) => r.value === filters.precio);
@@ -77,18 +98,40 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
       filtered = filtered.filter((p) => p.price >= range.min && p.price < range.max);
     }
   }
+  if (filters.edad) {
+    const range = AGE_RANGES.find((r) => r.value === filters.edad);
+    if (range) {
+      filtered = filtered.filter(
+        (p) => p.ageMin != null && p.ageMax != null && p.ageMin <= range.max && p.ageMax >= range.min,
+      );
+    }
+  }
+  if (filters.marca) {
+    filtered = filtered.filter((p) => p.brand === filters.marca);
+  }
   if (filters.foto === "1") {
     filtered = filtered.filter((p) => p.images.length > 0);
   }
 
-  const hasActiveFilters = filters.disponible || filters.precio || filters.foto;
+  const hasActiveFilters =
+    filters.disponible === "0" || filters.precio || filters.edad || filters.marca || filters.foto;
+
+  const sorted = [...filtered];
+  if (filters.orden === "vendidos") sorted.sort((a, b) => b.vistas - a.vistas);
+  else if (filters.orden === "precio-asc") sorted.sort((a, b) => a.price - b.price);
+  else if (filters.orden === "precio-desc") sorted.sort((a, b) => b.price - a.price);
+  else if (filters.orden === "nuevos") sorted.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+  const currentPage = Math.max(1, parseInt(filters.pagina ?? "1", 10) || 1);
+  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
+  const paginated = sorted.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   const siteUrl = getSiteUrl();
   const breadcrumbItems = [
     { name: "Inicio", url: siteUrl },
     { name: category.name, url: `${siteUrl}/categoria/${category.slug}` },
   ];
-  const itemListItems = filtered.map((p) => ({
+  const itemListItems = sorted.map((p) => ({
     name: p.name,
     url: `${siteUrl}/producto/${category.slug}/${p.slug}`,
   }));
@@ -137,42 +180,49 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
       ) : (
         <div className="md:flex md:gap-8">
           {/* Sidebar de filtros */}
-          <FilterSidebar counts={counts} />
+          <FilterSidebar counts={counts} brands={brandOptions} />
 
           {/* Productos */}
           <div className="min-w-0 flex-1">
             {/* Barra de resultados */}
-            <div className="mb-5 flex items-center justify-between border-b border-steel-100 pb-3">
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-steel-100 pb-3">
               <p className="font-mono text-xs text-steel-500">
-                {filtered.length}{" "}
-                {filtered.length === 1 ? "producto" : "productos"}
+                {sorted.length}{" "}
+                {sorted.length === 1 ? "producto" : "productos"}
                 {hasActiveFilters ? " encontrados" : ""}
               </p>
+              <SortSelect />
             </div>
 
-            {filtered.length === 0 ? (
+            {sorted.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-steel-200 bg-white p-12 text-center">
                 <p className="text-steel-500">Ningún producto coincide con los filtros aplicados.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {filtered.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    id={product.id}
-                    name={product.name}
-                    sku={product.sku}
-                    slug={product.slug}
-                    categoryName={product.category.name}
-                    measure={product.measure}
-                    gauge={product.gauge}
-                    price={product.price}
-                    available={product.available}
-                    categorySlug={product.category.slug}
-                    image={product.images[0]}
-                  />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {paginated.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      id={product.id}
+                      name={product.name}
+                      sku={product.sku}
+                      slug={product.slug}
+                      categoryName={product.category.name}
+                      measure={product.measure}
+                      gauge={product.gauge}
+                      price={product.price}
+                      stock={product.stock}
+                      ageMin={product.ageMin}
+                      ageMax={product.ageMax}
+                      available={product.available}
+                      categorySlug={product.category.slug}
+                      image={product.images[0]}
+                    />
+                  ))}
+                </div>
+                <Pagination currentPage={currentPage} totalPages={totalPages} searchParams={filters} />
+              </>
             )}
           </div>
         </div>
