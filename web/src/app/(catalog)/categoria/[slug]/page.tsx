@@ -43,6 +43,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     description:
       category.description ??
       `Productos de ${category.name} en ${settings.siteName}. Cotiza por WhatsApp.`,
+    // Canonical fijo (sin query params de filtro/orden/página): evita que
+    // cada combinación de ?precio=/?edad=/?orden= compita por el mismo
+    // contenido en el índice.
+    alternates: { canonical: `${getSiteUrl()}/categoria/${category.slug}` },
     openGraph: {
       title: category.name,
       description: category.description ?? undefined,

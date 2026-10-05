@@ -1,7 +1,14 @@
+import type { Metadata } from "next";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { searchProducts } from "@/lib/catalog";
 
 export const revalidate = 60;
+
+// Resultados de búsqueda: contenido variable por query, no indexable
+// (evita páginas delgadas/duplicadas en el buscador — prompt-geo §1).
+export const metadata: Metadata = {
+  robots: { index: false, follow: true },
+};
 
 type PageProps = {
   searchParams: Promise<{ q?: string }>;
@@ -62,6 +69,9 @@ export default async function SearchPage({ searchParams }: PageProps) {
               measure={product.measure}
               gauge={product.gauge}
               price={product.price}
+              stock={product.stock}
+              ageMin={product.ageMin}
+              ageMax={product.ageMax}
               available={product.available}
               categorySlug={product.category.slug}
               image={product.images[0]}

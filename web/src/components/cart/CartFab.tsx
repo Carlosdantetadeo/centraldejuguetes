@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useCart } from "@/components/cart/CartProvider";
 import { formatPrice, getSiteUrl } from "@/lib/utils";
 import { getStoredUtm } from "@/lib/utm";
+import { trackViewCart, trackWhatsappOrder } from "@/lib/analytics";
 
 export function CartFab() {
   const {
@@ -29,6 +30,19 @@ export function CartFab() {
       document.body.style.overflow = "";
     };
   }, [open]);
+
+  useEffect(() => {
+    if (!open || items.length === 0) return;
+    const total = items.reduce(
+      (sum, it) => sum + it.price * it.sizes.reduce((a, s) => a + s.qty, 0),
+      0,
+    );
+    trackViewCart(
+      items.map((it) => ({ id: it.id, name: it.name, price: it.price })),
+      total,
+      config.currency,
+    );
+  }, [open, items, config.currency]);
 
   if (items.length === 0) return null;
 
@@ -61,6 +75,11 @@ export function CartFab() {
   }
 
   function openWhatsApp(code?: string) {
+    const total = items.reduce(
+      (sum, it) => sum + it.price * it.sizes.reduce((a, s) => a + s.qty, 0),
+      0,
+    );
+    trackWhatsappOrder(total, config.currency, code);
     window.open(
       `https://wa.me/${config.whatsappNumber}?text=${encodeURIComponent(buildMessage(code))}`,
       "_blank",

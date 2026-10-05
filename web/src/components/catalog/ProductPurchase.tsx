@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useCart } from "@/components/cart/CartProvider";
+import { trackAddToCart } from "@/lib/analytics";
 
 type Props = {
   id: string;
@@ -11,6 +12,7 @@ type Props = {
   name: string;
   sku?: string | null;
   price: number;
+  currency: string;
   image?: string | null;
 };
 
@@ -22,6 +24,7 @@ export function ProductPurchase({
   name,
   sku,
   price,
+  currency,
   image,
 }: Props) {
   const { addItem, items, openCart } = useCart();
@@ -69,6 +72,8 @@ export function ProductPurchase({
       image,
       sizes: sizesData,
     });
+    const qty = sizesData.reduce((n, s) => n + s.qty, 0);
+    trackAddToCart({ id, name, price, quantity: qty }, currency);
     setAdded(true);
     if (hasSizes) setSizeQty({});
     else setSimpleQty(1);
