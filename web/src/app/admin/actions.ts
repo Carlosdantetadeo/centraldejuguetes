@@ -34,6 +34,10 @@ export async function saveProductAction(formData: FormData) {
     brand: formData.get("brand") || undefined,
     ageMin: formData.get("ageMin") || undefined,
     ageMax: formData.get("ageMax") || undefined,
+    safetyWarnings: formData.get("safetyWarnings") || undefined,
+    batteriesIncluded: formData.get("batteriesIncluded") || undefined,
+    boxContents: formData.get("boxContents") || undefined,
+    videoUrl: formData.get("videoUrl") || undefined,
     measure: formData.get("measure") || undefined,
     gauge: formData.get("gauge") || undefined,
     material: formData.get("material") || undefined,
@@ -63,7 +67,13 @@ export async function saveProductAction(formData: FormData) {
     }
   }
 
-  const data = parsed.data;
+  // batteriesIncluded es tri-estado (sí/no/no especificado): el select
+  // llega como string, se convierte a boolean|null fuera del schema.
+  const { batteriesIncluded: batteriesRaw, ...rest } = parsed.data;
+  const batteriesIncluded =
+    batteriesRaw === "true" ? true : batteriesRaw === "false" ? false : null;
+
+  const data = rest;
   const slug = data.slug?.trim() || slugify(data.name);
   const productId = formData.get("productId")?.toString();
   // Array cuando hay niveles; DbNull para limpiar la columna cuando no.
@@ -72,11 +82,11 @@ export async function saveProductAction(formData: FormData) {
   if (productId) {
     await prisma.product.update({
       where: { id: productId },
-      data: { ...data, slug, priceTiers: tiersData },
+      data: { ...data, slug, batteriesIncluded, priceTiers: tiersData },
     });
   } else {
     await prisma.product.create({
-      data: { ...data, slug, priceTiers: tiersData },
+      data: { ...data, slug, batteriesIncluded, priceTiers: tiersData },
     });
   }
 

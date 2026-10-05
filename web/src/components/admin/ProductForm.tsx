@@ -18,6 +18,10 @@ type ProductFormProps = {
     brand?: string | null;
     ageMin?: number | null;
     ageMax?: number | null;
+    safetyWarnings?: string | null;
+    batteriesIncluded?: boolean | null;
+    boxContents?: string | null;
+    videoUrl?: string | null;
     measure?: string | null;
     gauge?: string | null;
     material?: string | null;
@@ -131,6 +135,63 @@ export function ProductForm({ categories, action, initialValues }: ProductFormPr
             type="number"
             defaultValue={initialValues?.ageMax?.toString() ?? ""}
             placeholder="Ej: 6"
+          />
+        </div>
+      </div>
+
+      {/* Sección: Seguridad y contenido (ficha de producto) */}
+      <div className="rounded-2xl border border-steel-200 bg-white p-6">
+        <div className="mb-5 flex items-center gap-2">
+          <svg className="h-5 w-5 text-steel-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <h2 className="text-sm font-semibold text-steel-900">Seguridad y contenido</h2>
+        </div>
+
+        <div className="grid gap-5 md:grid-cols-2">
+          <div>
+            <label htmlFor="batteriesIncluded" className="mb-1.5 block text-sm font-medium text-steel-700">
+              ¿Incluye pilas?
+            </label>
+            <select
+              id="batteriesIncluded"
+              name="batteriesIncluded"
+              defaultValue={
+                initialValues?.batteriesIncluded === true
+                  ? "true"
+                  : initialValues?.batteriesIncluded === false
+                    ? "false"
+                    : ""
+              }
+              className="w-full rounded-xl border border-steel-200 bg-white px-4 py-3 text-sm text-steel-900 outline-none ring-brand-500 focus:ring-2"
+            >
+              <option value="">No especificado</option>
+              <option value="true">Sí, incluye pilas</option>
+              <option value="false">No incluye pilas</option>
+            </select>
+          </div>
+          <Field
+            label="Video corto (URL, opcional)"
+            name="videoUrl"
+            defaultValue={initialValues?.videoUrl ?? ""}
+            placeholder="https://..."
+          />
+        </div>
+
+        <div className="mt-5 grid gap-5 md:grid-cols-2">
+          <Field
+            label="Advertencias de seguridad (opcional)"
+            name="safetyWarnings"
+            defaultValue={initialValues?.safetyWarnings ?? ""}
+            placeholder="Ej: Contiene piezas pequeñas. No apto para menores de 3 años."
+            textarea
+          />
+          <Field
+            label="Contenido de la caja (opcional)"
+            name="boxContents"
+            defaultValue={initialValues?.boxContents ?? ""}
+            placeholder="Ej: 1 cocina de madera, 3 ollas, 2 utensilios"
+            textarea
           />
         </div>
       </div>

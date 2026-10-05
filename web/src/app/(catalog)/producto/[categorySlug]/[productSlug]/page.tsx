@@ -3,9 +3,11 @@ import { notFound } from "next/navigation";
 import { ProductGallery } from "@/components/catalog/ProductGallery";
 import { ProductPurchase } from "@/components/catalog/ProductPurchase";
 import { ProductViewTracker } from "@/components/catalog/ProductViewTracker";
-import { getProductBySlugs } from "@/lib/catalog";
+import { ProductCard } from "@/components/catalog/ProductCard";
+import { getProductBySlugs, getRelatedProducts } from "@/lib/catalog";
 import { getSiteSettings } from "@/lib/settings";
 import { formatPrice, getSiteUrl } from "@/lib/utils";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import { JsonLd } from "@/components/JsonLd";
 import { buildBreadcrumbJsonLd, buildProductJsonLd } from "@/lib/jsonld";
 
@@ -61,6 +63,7 @@ export default async function ProductPage({ params }: PageProps) {
     (product.priceTiers as { label: string; amount: number }[] | null) ?? [];
 
   const sizes = parseSizes(product.measure);
+  const relatedProducts = await getRelatedProducts(product);
 
   const siteUrl = getSiteUrl();
   const productUrl = `${siteUrl}/producto/${categorySlug}/${productSlug}`;
@@ -69,13 +72,25 @@ export default async function ProductPage({ params }: PageProps) {
     { name: product.category.name, url: `${siteUrl}/categoria/${product.category.slug}` },
     { name: product.name, url: productUrl },
   ];
+  const askWhatsAppUrl = settings.whatsappNumber
+    ? buildWhatsAppUrl(
+        { name: product.name, sku: product.sku, productUrl, available: product.available },
+        settings.whatsappNumber,
+      )
+    : null;
 
   // Detalles técnicos: si `measure` son tallas, se muestran arriba como
-  // selector y no se repiten aquí; solo quedan calibre/material.
+  // selector y no se repiten aquí; solo quedan calibre/material/edad/pilas.
   const specs = [
     !sizes.length ? { label: "Medida", value: product.measure } : null,
     { label: "Calibre", value: product.gauge },
     { label: "Material", value: product.material },
+    product.ageMin != null && product.ageMax != null
+      ? { label: "Edad recomendada", value: `${product.ageMin}–${product.ageMax} años` }
+      : null,
+    product.batteriesIncluded != null
+      ? { label: "Incluye pilas", value: product.batteriesIncluded ? "Sí" : "No" }
+      : null,
   ].filter((s): s is { label: string; value: string } => Boolean(s?.value));
 
   return (
@@ -184,6 +199,19 @@ export default async function ProductPage({ params }: PageProps) {
               <span className="mt-1 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-whatsapp" aria-hidden />
               {settings.priceNote}
             </p>
+            {askWhatsAppUrl && (
+              <a
+                href={askWhatsAppUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-whatsapp px-5 py-2.5 text-sm font-semibold text-whatsapp-dark transition hover:bg-whatsapp/5"
+              >
+                <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current" aria-hidden>
+                  <path d="M17.47 14.38c-.29-.15-1.71-.84-1.97-.94-.26-.1-.46-.15-.65.15-.19.29-.75.94-.92 1.13-.17.19-.34.22-.63.07-.29-.15-1.22-.45-2.33-1.43-.86-.77-1.44-1.72-1.61-2.01-.17-.29-.02-.45.13-.59.13-.13.29-.34.44-.51.15-.17.19-.29.29-.48.1-.19.05-.36-.02-.51-.07-.15-.65-1.57-.89-2.15-.24-.57-.48-.49-.65-.5-.17-.01-.36-.01-.55-.01-.19 0-.51.07-.77.36-.26.29-1.01.99-1.01 2.41 0 1.42 1.03 2.79 1.18 2.98.15.19 2.03 3.1 4.92 4.35.69.3 1.22.47 1.64.6.69.22 1.31.19 1.81.12.55-.08 1.71-.7 1.95-1.37.24-.67.24-1.25.17-1.37-.07-.12-.26-.19-.55-.34zM12.04 2.5A9.5 9.5 0 0 0 2.55 12c0 1.67.44 3.31 1.27 4.75L2.5 21.5l4.87-1.28A9.46 9.46 0 0 0 12.04 21.5 9.5 9.5 0 0 0 21.5 12 9.5 9.5 0 0 0 12.04 2.5z" />
+                </svg>
+                Preguntar por WhatsApp
+              </a>
+            )}
           </div>
 
           {/* Trust strip */}
@@ -261,12 +289,89 @@ export default async function ProductPage({ params }: PageProps) {
             </details>
           )}
 
+          {/* Video corto, si existe */}
+          {product.videoUrl && (
+            <details className="group mt-3 rounded-2xl border border-steel-200 bg-white" open>
+              <summary className="flex cursor-pointer select-none items-center justify-between px-5 py-4 text-sm font-semibold text-steel-900 marker:content-none">
+                Video del producto
+                <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 fill-none stroke-current stroke-2 transition-transform group-open:rotate-180" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                </svg>
+              </summary>
+              <div className="border-t border-steel-100 p-5">
+                <div className="aspect-video overflow-hidden rounded-xl bg-steel-900">
+                  <video src={product.videoUrl} controls className="h-full w-full" />
+                </div>
+              </div>
+            </details>
+          )}
+
+          {/* Contenido de la caja */}
+          {product.boxContents && (
+            <details className="group mt-3 rounded-2xl border border-steel-200 bg-white" open>
+              <summary className="flex cursor-pointer select-none items-center justify-between px-5 py-4 text-sm font-semibold text-steel-900 marker:content-none">
+                Contenido de la caja
+                <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 fill-none stroke-current stroke-2 transition-transform group-open:rotate-180" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                </svg>
+              </summary>
+              <div className="border-t border-steel-100 px-5 pb-5 pt-4">
+                <p className="leading-7 text-steel-600">{product.boxContents}</p>
+              </div>
+            </details>
+          )}
+
+          {/* Advertencias de seguridad */}
+          {product.safetyWarnings && (
+            <details className="group mt-3 rounded-2xl border border-amber-200 bg-amber-50" open>
+              <summary className="flex cursor-pointer select-none items-center gap-2 px-5 py-4 text-sm font-semibold text-amber-800 marker:content-none">
+                <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 fill-none stroke-current stroke-2" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                </svg>
+                Advertencias de seguridad
+              </summary>
+              <div className="border-t border-amber-200 px-5 pb-4 pt-3">
+                <p className="leading-6 text-amber-900">{product.safetyWarnings}</p>
+              </div>
+            </details>
+          )}
+
           <p className="mt-6 text-xs leading-5 text-steel-400">
             Al contactar por WhatsApp, {settings.siteName} tratará tus datos personales conforme a la
             política de privacidad publicada en este sitio.
           </p>
         </div>
       </div>
+
+      {/* Productos relacionados: misma edad y rango de precio */}
+      {relatedProducts.length > 0 && (
+        <section className="mt-12 border-t border-steel-100 pt-8">
+          <h2 className="mb-5 font-display text-lg font-bold tracking-tight text-steel-900">
+            Productos relacionados
+          </h2>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            {relatedProducts.map((p) => (
+              <ProductCard
+                key={p.id}
+                id={p.id}
+                name={p.name}
+                sku={p.sku}
+                slug={p.slug}
+                categoryName={p.category.name}
+                measure={p.measure}
+                gauge={p.gauge}
+                price={p.price}
+                stock={p.stock}
+                ageMin={p.ageMin}
+                ageMax={p.ageMax}
+                available={p.available}
+                categorySlug={p.category.slug}
+                image={p.images[0]}
+              />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

@@ -90,6 +90,30 @@ export async function getProductsByCategorySlug(slug: string) {
   return { category, products };
 }
 
+// Productos relacionados (prompt-frontend §6): misma edad y rango de
+// precio. Si el producto no tiene edad configurada, cae a "misma
+// categoría + precio similar" para no dejar la sección vacía.
+export async function getRelatedProducts(
+  product: { id: string; price: number; ageMin: number | null; ageMax: number | null; categoryId: string },
+  limit = 4,
+) {
+  const priceMin = product.price * 0.5;
+  const priceMax = product.price * 1.5;
+  return prisma.product.findMany({
+    where: {
+      id: { not: product.id },
+      available: true,
+      stock: { gt: 0 },
+      price: { gte: priceMin, lte: priceMax },
+      ...(product.ageMin != null && product.ageMax != null
+        ? { ageMin: { lte: product.ageMax }, ageMax: { gte: product.ageMin } }
+        : { categoryId: product.categoryId }),
+    },
+    take: limit,
+    include: productInclude,
+  });
+}
+
 export async function getProductBySlugs(categorySlug: string, productSlug: string) {
   const category = await getCategoryBySlug(categorySlug);
   if (!category) return null;

@@ -94,6 +94,12 @@ model Product {
   // Product.audience en el JSON-LD — ver src/lib/jsonld.ts.
   ageMin           Int?
   ageMax           Int?
+  // Ficha de producto (prompt-frontend §6): seguridad, pilas, contenido
+  // de la caja y video corto. Todo opcional — no se infiere ni se inventa.
+  safetyWarnings   String?
+  batteriesIncluded Boolean?
+  boxContents      String?
+  videoUrl         String?
   measure          String?
   gauge            String?
   material         String?

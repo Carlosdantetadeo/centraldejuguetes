@@ -23,6 +23,13 @@ export const productSchema = z.object({
   brand: z.string().optional(),
   ageMin: z.coerce.number().int().min(0, "Edad inválida.").optional(),
   ageMax: z.coerce.number().int().min(0, "Edad inválida.").optional(),
+  safetyWarnings: z.string().optional(),
+  // Tri-estado real (sí/no/no especificado) — un checkbox perdería el
+  // "no especificado", por eso es un select de texto que se convierte a
+  // boolean|null fuera del schema (ver saveProductAction).
+  batteriesIncluded: z.enum(["true", "false", ""]).optional(),
+  boxContents: z.string().optional(),
+  videoUrl: z.string().optional(),
   measure: z.string().optional(),
   gauge: z.string().optional(),
   material: z.string().optional(),
