@@ -5,7 +5,7 @@ import {
   type FilterCounts,
   type CategoryOption,
 } from "@/components/catalog/FilterSidebar";
-import { getGenderNav, getStorefrontProducts } from "@/lib/catalog";
+import { getActiveCampaign, getGenderNav, getStorefrontProducts } from "@/lib/catalog";
 import { getSiteSettings } from "@/lib/settings";
 import { JsonLd } from "@/components/JsonLd";
 import { buildStoreJsonLd } from "@/lib/jsonld";
@@ -30,11 +30,20 @@ type PageProps = {
 
 export default async function HomePage({ searchParams }: PageProps) {
   const filters = await searchParams;
-  const [allProducts, settings, genderRaw] = await Promise.all([
+  const [allProducts, settings, genderRaw, campaign] = await Promise.all([
     getStorefrontProducts(),
     getSiteSettings(),
     getGenderNav(),
+    getActiveCampaign(),
   ]);
+
+  const hero = {
+    imageUrl: campaign?.imageUrl ?? settings.heroImageUrl,
+    title: campaign?.title ?? settings.siteName,
+    subtitle: campaign?.subtitle ?? settings.siteDescription,
+    ctaLabel: campaign?.ctaLabel ?? "Ver catálogo",
+    ctaUrl: campaign?.ctaUrl ?? "#productos",
+  };
   const genders = genderRaw.map((g) => ({
     name: g.name,
     slug: g.slug,
@@ -93,13 +102,13 @@ export default async function HomePage({ searchParams }: PageProps) {
     <>
       <JsonLd data={buildStoreJsonLd(settings)} />
 
-      {/* Hero banner */}
-      <section className={`relative overflow-hidden ${settings.heroImageUrl ? "bg-steel-900" : "bg-brand-600"}`}>
-        {settings.heroImageUrl ? (
+      {/* Hero banner — campaña vigente si hay una, si no el genérico de SiteSettings */}
+      <section className={`relative overflow-hidden ${hero.imageUrl ? "bg-steel-900" : "bg-brand-600"}`}>
+        {hero.imageUrl ? (
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={settings.heroImageUrl}
+              src={hero.imageUrl}
               alt=""
               aria-hidden="true"
               className="absolute inset-0 h-full w-full object-cover"
@@ -118,27 +127,29 @@ export default async function HomePage({ searchParams }: PageProps) {
 
         <div className="relative mx-auto max-w-3xl px-4 py-16 text-center sm:py-24">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-xs font-medium text-white/90">
-            Mayorista de juguetes · Importación directa
+            {campaign
+              ? `Oferta hasta el ${campaign.endsAt.toLocaleDateString("es-PE")}`
+              : "Mayorista de juguetes · Importación directa"}
           </span>
 
           <h1 className="mt-6 font-display text-4xl font-extrabold leading-[1.05] tracking-tight text-white sm:text-6xl">
-            {settings.siteName}
+            {hero.title}
           </h1>
 
           <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-white/75 sm:text-lg">
-            {settings.siteDescription}
+            {hero.subtitle}
           </p>
 
           <div className="mt-9 flex justify-center">
             <a
-              href="#productos"
+              href={hero.ctaUrl}
               className={`inline-flex items-center gap-2 rounded-xl px-7 py-3.5 text-sm font-semibold shadow-lg transition-all hover:shadow-xl ${
-                settings.heroImageUrl
+                hero.imageUrl
                   ? "bg-brand-600 text-white shadow-brand-600/30 hover:bg-brand-500"
                   : "bg-white text-brand-700 shadow-white/20 hover:bg-brand-50"
               }`}
             >
-              Ver catálogo
+              {hero.ctaLabel}
               <svg viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-current stroke-2" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
               </svg>

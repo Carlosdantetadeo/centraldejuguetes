@@ -8,6 +8,7 @@ import { prisma } from "@/lib/db";
 import { deleteImageFiles, uploadBrandingAsset } from "@/lib/images";
 import { slugify } from "@/lib/utils";
 import {
+  campaignSchema,
   categorySchema,
   faqItemSchema,
   priceTierSchema,
@@ -381,6 +382,64 @@ export async function saveFaqAction(formData: FormData) {
 
   revalidatePath("/preguntas-frecuentes");
   redirect("/admin/faq");
+}
+
+export async function saveCampaignAction(formData: FormData) {
+  await requireAdmin();
+
+  const parsed = campaignSchema.safeParse({
+    title: formData.get("title"),
+    subtitle: formData.get("subtitle") || undefined,
+    ctaLabel: formData.get("ctaLabel") || undefined,
+    ctaUrl: formData.get("ctaUrl") || undefined,
+    startsAt: formData.get("startsAt"),
+    endsAt: formData.get("endsAt"),
+    active: formData.get("active") === "on",
+  });
+
+  if (!parsed.success) {
+    redirect("/admin/campanas?error=invalid");
+  }
+
+  const data = parsed.data;
+  const campaignId = formData.get("campaignId")?.toString();
+
+  // Imagen de campaña (opcional): se sube a Storage si viene un archivo.
+  let imageUrl: string | undefined;
+  const image = formData.get("image");
+  if (image instanceof File && image.size > 0 && image.type.startsWith("image/")) {
+    try {
+      imageUrl = await uploadBrandingAsset(
+        Buffer.from(await image.arrayBuffer()),
+        `campana-${slugify(data.title)}-${Date.now()}`,
+        image.type,
+      );
+    } catch {
+      redirect("/admin/campanas?error=invalid");
+    }
+  }
+
+  if (campaignId) {
+    await prisma.campaign.update({
+      where: { id: campaignId },
+      data: { ...data, ...(imageUrl ? { imageUrl } : {}) },
+    });
+  } else {
+    await prisma.campaign.create({ data: { ...data, imageUrl } });
+  }
+
+  revalidatePath("/");
+  redirect("/admin/campanas");
+}
+
+export async function deleteCampaignAction(formData: FormData) {
+  await requireAdmin();
+  const campaignId = formData.get("campaignId")?.toString();
+  if (!campaignId) return;
+
+  await prisma.campaign.delete({ where: { id: campaignId } });
+  revalidatePath("/");
+  redirect("/admin/campanas");
 }
 
 export async function deleteFaqAction(formData: FormData) {

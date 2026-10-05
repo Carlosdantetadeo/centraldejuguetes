@@ -91,6 +91,16 @@ export const siteSettingsSchema = z.object({
   legalText: optionalText,
 });
 
+export const campaignSchema = z.object({
+  title: z.string().trim().min(2, "El título es obligatorio."),
+  subtitle: optionalText,
+  ctaLabel: optionalText,
+  ctaUrl: optionalText,
+  startsAt: z.coerce.date({ message: "Fecha de inicio inválida." }),
+  endsAt: z.coerce.date({ message: "Fecha de fin inválida." }),
+  active: z.coerce.boolean().default(true),
+});
+
 export const faqItemSchema = z.object({
   question: z.string().trim().min(5, "La pregunta es obligatoria."),
   answer: z.string().trim().min(5, "La respuesta es obligatoria."),

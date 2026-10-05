@@ -211,6 +211,20 @@ export async function getProductById(id: string) {
   });
 }
 
+// La campaña vigente "ahora": activa y dentro de su rango de fechas. Si
+// hay más de una superpuesta, gana la más reciente (startsAt desc).
+export async function getActiveCampaign() {
+  const now = new Date();
+  return prisma.campaign.findFirst({
+    where: { active: true, startsAt: { lte: now }, endsAt: { gte: now } },
+    orderBy: { startsAt: "desc" },
+  });
+}
+
+export async function getAllCampaignsAdmin() {
+  return prisma.campaign.findMany({ orderBy: { startsAt: "desc" } });
+}
+
 export async function getFaqItems() {
   return prisma.faqItem.findMany({ orderBy: { sortOrder: "asc" } });
 }

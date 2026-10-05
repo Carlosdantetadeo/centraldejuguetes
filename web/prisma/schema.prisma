@@ -114,6 +114,26 @@ model Product {
 // citable + FAQPage JSON-LD). Sin categorías/grupos — una lista simple
 // ordenada por sortOrder, como pide el prompt (nada de contenido delgado
 // ni respuestas duplicadas inventadas por código).
+// Campaña activa configurable (GEO fase 4: "fecha límite de pedido" para
+// Navidad/temporada; prompt-frontend §4.3: hero de la home). Se muestra la
+// campaña cuyo rango [startsAt, endsAt] cubre "ahora" y active=true — ver
+// getActiveCampaign() en src/lib/catalog.ts.
+model Campaign {
+  id        String   @id @default(cuid())
+  title     String
+  subtitle  String?
+  imageUrl  String?
+  ctaLabel  String?
+  ctaUrl    String?
+  startsAt  DateTime
+  endsAt    DateTime
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([active, startsAt, endsAt])
+}
+
 model FaqItem {
   id        String   @id @default(cuid())
   question  String
