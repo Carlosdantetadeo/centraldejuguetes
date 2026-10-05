@@ -104,6 +104,14 @@ export const campaignSchema = z.object({
   active: z.coerce.boolean().default(true),
 });
 
+export const testimonialSchema = z.object({
+  authorName: z.string().trim().min(2, "El nombre es obligatorio."),
+  text: z.string().trim().min(10, "El testimonio es obligatorio."),
+  rating: z.coerce.number().int().min(1).max(5).optional(),
+  published: z.coerce.boolean().default(true),
+  sortOrder: z.coerce.number().int().default(0),
+});
+
 export const faqItemSchema = z.object({
   question: z.string().trim().min(5, "La pregunta es obligatoria."),
   answer: z.string().trim().min(5, "La respuesta es obligatoria."),

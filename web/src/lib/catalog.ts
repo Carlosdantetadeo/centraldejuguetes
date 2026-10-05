@@ -226,6 +226,17 @@ export async function getAllCampaignsAdmin() {
   return prisma.campaign.findMany({ orderBy: { startsAt: "desc" } });
 }
 
+export async function getPublishedTestimonials() {
+  return prisma.testimonial.findMany({
+    where: { published: true },
+    orderBy: { sortOrder: "asc" },
+  });
+}
+
+export async function getAllTestimonialsAdmin() {
+  return prisma.testimonial.findMany({ orderBy: { sortOrder: "asc" } });
+}
+
 export async function getFaqItems() {
   return prisma.faqItem.findMany({ orderBy: { sortOrder: "asc" } });
 }

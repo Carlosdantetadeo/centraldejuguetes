@@ -14,6 +14,7 @@ import {
   priceTierSchema,
   productSchema,
   siteSettingsSchema,
+  testimonialSchema,
 } from "@/lib/validations";
 
 function revalidateCatalog() {
@@ -361,6 +362,62 @@ export async function bulkImportAction(formData: FormData) {
 
   revalidateCatalog();
   return results;
+}
+
+export async function saveTestimonialAction(formData: FormData) {
+  await requireAdmin();
+
+  const parsed = testimonialSchema.safeParse({
+    authorName: formData.get("authorName"),
+    text: formData.get("text"),
+    rating: formData.get("rating") || undefined,
+    published: formData.get("published") === "on",
+    sortOrder: formData.get("sortOrder") || 0,
+  });
+
+  if (!parsed.success) {
+    redirect("/admin/testimonios?error=invalid");
+  }
+
+  const data = parsed.data;
+  const testimonialId = formData.get("testimonialId")?.toString();
+
+  // Foto del cliente (opcional): se sube a Storage si viene un archivo.
+  let imageUrl: string | undefined;
+  const image = formData.get("image");
+  if (image instanceof File && image.size > 0 && image.type.startsWith("image/")) {
+    try {
+      imageUrl = await uploadBrandingAsset(
+        Buffer.from(await image.arrayBuffer()),
+        `testimonio-${slugify(data.authorName)}-${Date.now()}`,
+        image.type,
+      );
+    } catch {
+      redirect("/admin/testimonios?error=invalid");
+    }
+  }
+
+  if (testimonialId) {
+    await prisma.testimonial.update({
+      where: { id: testimonialId },
+      data: { ...data, ...(imageUrl ? { imageUrl } : {}) },
+    });
+  } else {
+    await prisma.testimonial.create({ data: { ...data, imageUrl } });
+  }
+
+  revalidatePath("/");
+  redirect("/admin/testimonios");
+}
+
+export async function deleteTestimonialAction(formData: FormData) {
+  await requireAdmin();
+  const testimonialId = formData.get("testimonialId")?.toString();
+  if (!testimonialId) return;
+
+  await prisma.testimonial.delete({ where: { id: testimonialId } });
+  revalidatePath("/");
+  redirect("/admin/testimonios");
 }
 
 export async function saveFaqAction(formData: FormData) {

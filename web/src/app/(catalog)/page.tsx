@@ -9,6 +9,7 @@ import {
   getActiveCampaign,
   getFeaturedProducts,
   getGenderNav,
+  getPublishedTestimonials,
   getStorefrontProducts,
 } from "@/lib/catalog";
 import { getSiteSettings } from "@/lib/settings";
@@ -46,12 +47,13 @@ type PageProps = {
 
 export default async function HomePage({ searchParams }: PageProps) {
   const filters = await searchParams;
-  const [allProducts, settings, genderRaw, campaign, bestSellers] = await Promise.all([
+  const [allProducts, settings, genderRaw, campaign, bestSellers, testimonials] = await Promise.all([
     getStorefrontProducts(),
     getSiteSettings(),
     getGenderNav(),
     getActiveCampaign(),
     getFeaturedProducts(8),
+    getPublishedTestimonials(),
   ]);
 
   const hero = {
@@ -355,6 +357,45 @@ export default async function HomePage({ searchParams }: PageProps) {
           </div>
         )}
       </section>
+
+      {/* Prueba social — solo testimonios reales publicados desde el panel */}
+      {testimonials.length > 0 && (
+        <section className="border-t border-steel-100 bg-steel-50 py-12">
+          <div className="mx-auto max-w-6xl px-4">
+            <h2 className="mb-6 font-display text-xl font-bold tracking-tight text-steel-900">
+              Lo que dicen nuestros clientes
+            </h2>
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {testimonials.map((t) => (
+                <figure key={t.id} className="rounded-2xl border border-steel-200 bg-white p-5">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-steel-200 bg-steel-100">
+                      {t.imageUrl ? (
+                        /* eslint-disable-next-line @next/next/no-img-element */
+                        <img src={t.imageUrl} alt={t.authorName} className="h-full w-full object-cover" />
+                      ) : (
+                        <span className="text-xs font-bold text-steel-400">
+                          {t.authorName.slice(0, 2).toUpperCase()}
+                        </span>
+                      )}
+                    </div>
+                    <div>
+                      <figcaption className="text-sm font-semibold text-steel-900">{t.authorName}</figcaption>
+                      {t.rating && (
+                        <span className="text-xs text-amber-500" aria-hidden>
+                          {"★".repeat(t.rating)}
+                          <span className="text-steel-200">{"★".repeat(5 - t.rating)}</span>
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <blockquote className="mt-3 text-sm leading-6 text-steel-600">“{t.text}”</blockquote>
+                </figure>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
     </>
   );
 }

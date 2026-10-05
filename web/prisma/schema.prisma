@@ -140,6 +140,24 @@ model Campaign {
   @@index([active, startsAt, endsAt])
 }
 
+// Prueba social de la home (prompt-frontend §4.10) — testimonios curados
+// por el admin, no un sistema de reseñas por producto. Por eso NO se
+// mapea a Product.Review/AggregateRating en el JSON-LD (GEO prohíbe
+// inventar ese schema sin reseñas reales ligadas al producto concreto).
+model Testimonial {
+  id         String   @id @default(cuid())
+  authorName String
+  text       String
+  imageUrl   String?
+  rating     Int?
+  published  Boolean  @default(true)
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([published, sortOrder])
+}
+
 model FaqItem {
   id        String   @id @default(cuid())
   question  String
