@@ -14,7 +14,7 @@
 | 8 | Guía por presupuesto | Regalos de juguetes por menos de S/ 50 | "regalo barato para niño" | ✅ Dato disponible (`price`) — falta redactar intro + aprobar |
 | 9 | Guía por presupuesto | Regalos de juguetes de S/ 50 a S/ 100 | "juguetes entre 50 y 100 soles" | ✅ Mismo caso |
 | 10 | Guía por presupuesto | Regalos de juguetes de S/ 100 a S/ 200 | "juguete de calidad por 150 soles" | ✅ Mismo caso |
-| 11 | Guía por ocasión | Regalos de Navidad para niños | "qué regalar en Navidad a un niño" | ✅ Dato disponible (fecha límite vendría de `Campaign`, aún no migrado) |
+| 11 | Guía por ocasión | Regalos de Navidad para niños | "qué regalar en Navidad a un niño" | ✅ Dato disponible (`Campaign` ya migrado y en el hero de home) — falta la campaña real + redactar |
 | 12 | Guía por ocasión | Regalos de cumpleaños por edad | "ideas de regalo de cumpleaños para niños" | ✅ Dato disponible (`ageMin`/`ageMax`) |
 | 13 | Guía por tipo de juego | Juguetes didácticos y STEM | "juguetes educativos Montessori" | ✅ Dato disponible (categoría real del catálogo) |
 | 14 | Guía por tipo de juego | Juguetes de madera | "juguetes de madera para niños" | ✅ Mismo caso |
@@ -26,9 +26,9 @@
 - Filtro por precio (#8–10): ya existe en `FilterSidebar`/home — una guía por presupuesto puede reusar `getStorefrontProducts()` + el mismo rango de precios, solo le falta el texto introductorio y el propio componente de página.
 - Filtro por categoría (#13–14): ya existe (`getProductsByCategorySlug`) — una guía "por tipo de juego" es básicamente una categoría con una intro editorial encima.
 - ✅ **`ageMin`/`ageMax` en `Product` (resuelto 2026-10-04):** desbloquea #3–7 y #12. Falta: una query `getProductsByAgeRange()` en `catalog.ts` (no construida — todavía no hay página consumidora) y, por supuesto, el texto editorial real.
+- ✅ **Modelo `Campaign` (resuelto 2026-10-04):** desbloquea #11. CRUD en `/admin/campanas`, hero de home ya la consume. Falta la campaña real del cliente + redactar la guía.
 
 ## Lo que sigue bloqueado y por qué
 
 - **Quiénes somos (#2):** necesita datos reales de entidad legal que no existen en una plantilla neutra.
-- **Navidad/campañas (#11):** se beneficia del modelo `Campaign` (pendiente) para la fecha límite, aunque podría lanzarse sin eso usando solo el filtro de precio.
 - **Quiz de regalo (#15):** es una feature de frontend completa (prompt-frontend §4.9), no una página de contenido simple.
