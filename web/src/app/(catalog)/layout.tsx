@@ -3,6 +3,7 @@ import { Header } from "@/components/layout/Header";
 import { TopBar } from "@/components/layout/TopBar";
 import { CartProvider } from "@/components/cart/CartProvider";
 import { CartFab } from "@/components/cart/CartFab";
+import { UtmCapture } from "@/components/catalog/UtmCapture";
 import { getSiteSettings } from "@/lib/settings";
 
 export default async function CatalogLayout({
@@ -20,6 +21,7 @@ export default async function CatalogLayout({
         locale: settings.locale,
       }}
     >
+      <UtmCapture />
       <div className="flex min-h-full flex-col">
         <div className="sticky top-0 z-40">
           <TopBar />

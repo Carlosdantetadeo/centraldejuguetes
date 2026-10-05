@@ -187,6 +187,7 @@ export default async function ProductPage({ params }: PageProps) {
           {/* Selector de tallas + CTA de WhatsApp */}
           <div className="mt-6 rounded-2xl border border-steel-200 bg-white p-5">
             <ProductPurchase
+              id={product.id}
               sizes={sizes}
               categorySlug={categorySlug}
               productSlug={productSlug}

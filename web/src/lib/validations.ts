@@ -125,6 +125,25 @@ export const faqItemSchema = z.object({
   sortOrder: z.coerce.number().int().default(0),
 });
 
+export const preorderSchema = z.object({
+  items: z
+    .array(
+      z.object({
+        productId: z.string().min(1),
+        qty: z.coerce.number().int().min(1).max(999),
+        price: z.coerce.number().nonnegative(), // precio que el cliente tenía mostrado — se compara contra el real
+      }),
+    )
+    .min(1, "El pedido necesita al menos un producto."),
+  district: z.string().trim().max(120).optional(),
+  isGift: z.boolean().default(false),
+  utmSource: z.string().trim().max(200).optional(),
+  utmMedium: z.string().trim().max(200).optional(),
+  utmCampaign: z.string().trim().max(200).optional(),
+  fbclid: z.string().trim().max(500).optional(),
+  gclid: z.string().trim().max(500).optional(),
+});
+
 export const imageAltSchema = z.object({
   altText: z.string().min(3, "La descripción de la imagen es obligatoria."),
 });

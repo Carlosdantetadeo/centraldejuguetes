@@ -164,6 +164,27 @@ model Testimonial {
   @@index([published, sortOrder])
 }
 
+// Pre-pedido (prompt-frontend §7): se crea al tocar "Enviar pedido por
+// WhatsApp", con precio/stock ya revalidados contra la DB. `code` es lo
+// que el agente de Kapso (o cualquier consulta externa) usa para
+// recuperar el pedido — ver GET /api/preorders/[code]. Sin tenantId:
+// esta plantilla es single-tenant (ver docs/03-spec-plantilla.md).
+model WebPreorder {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  items       Json
+  total       Float
+  district    String?
+  isGift      Boolean  @default(false)
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  fbclid      String?
+  gclid       String?
+  status      String   @default("iniciado_web")
+  createdAt   DateTime @default(now())
+}
+
 model FaqItem {
   id        String   @id @default(cuid())
   question  String

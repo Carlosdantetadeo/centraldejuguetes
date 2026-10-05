@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useCart } from "@/components/cart/CartProvider";
 
 type Props = {
+  id: string;
   sizes: string[];
   categorySlug: string;
   productSlug: string;
@@ -14,6 +15,7 @@ type Props = {
 };
 
 export function ProductPurchase({
+  id,
   sizes,
   categorySlug,
   productSlug,
@@ -58,6 +60,7 @@ export function ProductPurchase({
 
     addItem({
       key: `${categorySlug}/${productSlug}`,
+      id,
       categorySlug,
       productSlug,
       name,
