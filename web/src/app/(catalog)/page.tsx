@@ -5,7 +5,12 @@ import {
   type FilterCounts,
   type CategoryOption,
 } from "@/components/catalog/FilterSidebar";
-import { getActiveCampaign, getGenderNav, getStorefrontProducts } from "@/lib/catalog";
+import {
+  getActiveCampaign,
+  getFeaturedProducts,
+  getGenderNav,
+  getStorefrontProducts,
+} from "@/lib/catalog";
 import { getSiteSettings } from "@/lib/settings";
 import { JsonLd } from "@/components/JsonLd";
 import { buildStoreJsonLd } from "@/lib/jsonld";
@@ -13,10 +18,20 @@ import { buildStoreJsonLd } from "@/lib/jsonld";
 export const revalidate = 60;
 
 const PRICE_RANGES = [
-  { value: "0-50", min: 0, max: 50 },
-  { value: "50-200", min: 50, max: 200 },
-  { value: "200-500", min: 200, max: 500 },
-  { value: "500-99999", min: 500, max: 99999 },
+  { value: "0-50", label: "Hasta S/ 50", min: 0, max: 50 },
+  { value: "50-200", label: "S/ 50 – S/ 200", min: 50, max: 200 },
+  { value: "200-500", label: "S/ 200 – S/ 500", min: 200, max: 500 },
+  { value: "500-99999", label: "Más de S/ 500", min: 500, max: 99999 },
+] as const;
+
+// Comprar por edad (prompt-frontend §4.4). Filtra por solapamiento de
+// rango: un producto entra si [ageMin, ageMax] se cruza con la franja.
+const AGE_RANGES = [
+  { value: "0-2", label: "0–2 años", min: 0, max: 2 },
+  { value: "3-5", label: "3–5 años", min: 3, max: 5 },
+  { value: "6-8", label: "6–8 años", min: 6, max: 8 },
+  { value: "9-12", label: "9–12 años", min: 9, max: 12 },
+  { value: "13-99", label: "13+ años", min: 13, max: 99 },
 ] as const;
 
 type PageProps = {
@@ -24,17 +39,19 @@ type PageProps = {
     categoria?: string;
     disponible?: string;
     precio?: string;
+    edad?: string;
     foto?: string;
   }>;
 };
 
 export default async function HomePage({ searchParams }: PageProps) {
   const filters = await searchParams;
-  const [allProducts, settings, genderRaw, campaign] = await Promise.all([
+  const [allProducts, settings, genderRaw, campaign, bestSellers] = await Promise.all([
     getStorefrontProducts(),
     getSiteSettings(),
     getGenderNav(),
     getActiveCampaign(),
+    getFeaturedProducts(8),
   ]);
 
   const hero = {
@@ -91,12 +108,20 @@ export default async function HomePage({ searchParams }: PageProps) {
       );
     }
   }
+  if (filters.edad) {
+    const range = AGE_RANGES.find((r) => r.value === filters.edad);
+    if (range) {
+      filtered = filtered.filter(
+        (p) => p.ageMin != null && p.ageMax != null && p.ageMin <= range.max && p.ageMax >= range.min,
+      );
+    }
+  }
   if (filters.foto === "1") {
     filtered = filtered.filter((p) => p.images.length > 0);
   }
 
   const hasActiveFilters =
-    filters.categoria || filters.disponible || filters.precio || filters.foto;
+    filters.categoria || filters.disponible || filters.precio || filters.edad || filters.foto;
 
   return (
     <>
@@ -184,7 +209,84 @@ export default async function HomePage({ searchParams }: PageProps) {
         </div>
       </section>
 
-      {/* Banda principal por género */}
+      {/* Comprar por edad */}
+      <section className="border-b border-steel-100 bg-white py-8">
+        <div className="mx-auto max-w-6xl px-4">
+          <h2 className="mb-4 font-display text-lg font-bold tracking-tight text-steel-900">
+            Comprar por edad
+          </h2>
+          <div className="flex gap-3 overflow-x-auto pb-1 sm:gap-4">
+            {AGE_RANGES.map((range) => (
+              <a
+                key={range.value}
+                href={`/?edad=${range.value}#productos`}
+                className={`flex shrink-0 flex-col items-center justify-center gap-1.5 rounded-full border px-5 py-5 text-center transition-all hover:-translate-y-0.5 hover:shadow-md sm:px-7 sm:py-6 ${
+                  filters.edad === range.value
+                    ? "border-brand-500 bg-brand-50 text-brand-700"
+                    : "border-steel-200 bg-steel-50 text-steel-700 hover:border-brand-300"
+                }`}
+              >
+                <span className="text-sm font-bold sm:text-base">{range.label}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Comprar por presupuesto */}
+      <section className="border-b border-steel-100 bg-steel-50 py-8">
+        <div className="mx-auto max-w-6xl px-4">
+          <h2 className="mb-4 font-display text-lg font-bold tracking-tight text-steel-900">
+            Comprar por presupuesto
+          </h2>
+          <div className="flex flex-wrap gap-3">
+            {PRICE_RANGES.map((range) => (
+              <a
+                key={range.value}
+                href={`/?precio=${range.value}#productos`}
+                className={`rounded-xl border px-5 py-3 text-sm font-semibold transition-all hover:-translate-y-0.5 hover:shadow-md ${
+                  filters.precio === range.value
+                    ? "border-brand-500 bg-brand-600 text-white"
+                    : "border-steel-200 bg-white text-steel-700 hover:border-brand-300"
+                }`}
+              >
+                {range.label}
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Más vendidos — máximo 8, solo con stock real */}
+      {bestSellers.length > 0 && (
+        <section className="border-b border-steel-100 bg-white py-10">
+          <div className="mx-auto max-w-6xl px-4">
+            <h2 className="mb-5 font-display text-lg font-bold tracking-tight text-steel-900">
+              Más vendidos
+            </h2>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+              {bestSellers.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  id={product.id}
+                  name={product.name}
+                  sku={product.sku}
+                  slug={product.slug}
+                  categoryName={product.category.name}
+                  measure={product.measure}
+                  gauge={product.gauge}
+                  price={product.price}
+                  available={product.available}
+                  categorySlug={product.category.slug}
+                  image={product.images[0]}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Banda principal por tipo de juego (categorías) */}
       <GenderBand genders={genders} />
 
       {/* Productos + sidebar */}

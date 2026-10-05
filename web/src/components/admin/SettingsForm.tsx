@@ -197,6 +197,33 @@ export function SettingsForm({ settings }: { settings: SiteSettings }) {
         </div>
       </Card>
 
+      {/* Barra superior */}
+      <Card title="Barra superior (horario, envíos, pagos)">
+        <Field
+          label="Horario de atención"
+          name="businessHours"
+          defaultValue={settings.businessHours}
+          placeholder="Lun a sáb 9am–7pm"
+        />
+        <Field
+          label="Envíos"
+          name="shippingNote"
+          defaultValue={settings.shippingNote}
+          placeholder="Envíos a Lima y provincias"
+        />
+        <div className="sm:col-span-2">
+          <Field
+            label="Medios de pago"
+            name="paymentMethods"
+            defaultValue={settings.paymentMethods}
+            placeholder="Yape, Plin, transferencia"
+          />
+        </div>
+        <p className="sm:col-span-2 text-xs text-steel-400">
+          Deja algún campo vacío para que esa parte no se muestre en la barra superior.
+        </p>
+      </Card>
+
       {/* Redes */}
       <Card title="Redes sociales">
         <Field label="Facebook (URL)" name="socialFacebook" type="url" defaultValue={settings.socialFacebook} placeholder="https://facebook.com/..." />

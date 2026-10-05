@@ -65,9 +65,10 @@ export async function getStorefrontProducts() {
   });
 }
 
+// "Más vendidos" (prompt-frontend §4.6): máximo 8, nunca productos sin stock.
 export async function getFeaturedProducts(limit = 8) {
   return prisma.product.findMany({
-    where: { featured: true },
+    where: { featured: true, available: true, stock: { gt: 0 } },
     take: limit,
     orderBy: { updatedAt: "desc" },
     include: productInclude,

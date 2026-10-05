@@ -36,6 +36,12 @@ model SiteSettings {
   socialTiktok    String?
   footerTagline   String?
 
+  // Barra superior (prompt-frontend §4 punto 1): horario, envíos, medios
+  // de pago. Texto libre editable — nada hardcodeado en el componente.
+  businessHours   String?
+  shippingNote    String?
+  paymentMethods  String?
+
   // Fiscal / legal
   currency        String   @default("PEN")
   locale          String   @default("es-PE")
