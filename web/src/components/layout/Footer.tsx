@@ -41,67 +41,41 @@ export async function Footer() {
 
   return (
     <footer className="mt-auto border-t border-steel-800 bg-steel-900 text-steel-100">
-      {/* Únete a nuestra comunidad */}
+      {/* Convenio con empresas — angulo B2B, solo WhatsApp (sin redes mezcladas) */}
       <div className="border-b border-steel-800 bg-gradient-to-r from-steel-900 via-steel-800 to-steel-900">
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-5 px-4 py-9 text-center sm:flex-row sm:justify-between sm:text-left">
           <div className="flex items-center gap-4">
             <span className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand-600/20 text-brand-400 sm:flex">
               <svg viewBox="0 0 24 24" className="h-6 w-6 fill-none stroke-current stroke-2" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-3.75 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM21 12c0 4.556-4.03 8.25-9 8.25a9.76 9.76 0 0 1-4-.84L3 21l1.5-4.5A8.86 8.86 0 0 1 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 21V6.75A2.25 2.25 0 0 1 6 4.5h4.5a2.25 2.25 0 0 1 2.25 2.25V21M3.75 21h16.5M3.75 21h-1.5M13.5 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M13.5 21h6.75M20.25 21h1.5M13.5 9h.008v.008H13.5V9Zm0 3h.008v.008H13.5V12Zm0 3h.008v.008H13.5V15ZM6.75 9h.008v.008H6.75V9Zm0 3h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm3-6h.008v.008H9.75V9Zm0 3h.008v.008H9.75V12Zm0 3h.008v.008H9.75V15Z" />
               </svg>
             </span>
             <div>
               <p className="font-display text-xl font-bold text-white sm:text-2xl">
-                Pedidos y cotizaciones
+                Convenios para empresas
               </p>
               <p className="mt-1.5 text-sm text-steel-300">
-                Para consultas, novedades y precios mayoristas, escribinos directo.
+                Cotizaciones especiales y atención directa para pedidos corporativos. Escribinos por WhatsApp.
               </p>
             </div>
           </div>
-          <div className="flex flex-wrap justify-center gap-3">
-            {whatsappNumber && (
-              <a
-                href={waLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-xl bg-whatsapp px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-whatsapp-dark"
-              >
-                <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current" aria-hidden>
-                  <path d="M17.47 14.38c-.29-.15-1.71-.84-1.97-.94-.26-.1-.46-.15-.65.15-.19.29-.75.94-.92 1.13-.17.19-.34.22-.63.07-.29-.15-1.22-.45-2.33-1.43-.86-.77-1.44-1.72-1.61-2.01-.17-.29-.02-.45.13-.59.13-.13.29-.34.44-.51.15-.17.19-.29.29-.48.1-.19.05-.36-.02-.51-.07-.15-.65-1.57-.89-2.15-.24-.57-.48-.49-.65-.5-.17-.01-.36-.01-.55-.01-.19 0-.51.07-.77.36-.26.29-1.01.99-1.01 2.41 0 1.42 1.03 2.79 1.18 2.98.15.19 2.03 3.1 4.92 4.35.69.3 1.22.47 1.64.6.69.22 1.31.19 1.81.12.55-.08 1.71-.7 1.95-1.37.24-.67.24-1.25.17-1.37-.07-.12-.26-.19-.55-.34zM12.04 2.5A9.5 9.5 0 0 0 2.55 12c0 1.67.44 3.31 1.27 4.75L2.5 21.5l4.87-1.28A9.46 9.46 0 0 0 12.04 21.5 9.5 9.5 0 0 0 21.5 12 9.5 9.5 0 0 0 12.04 2.5z" />
-                </svg>
-                WhatsApp
-              </a>
-            )}
-            {socials.map((s) =>
-              s.href ? (
-                <a
-                  key={s.name}
-                  href={s.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-xl border border-steel-700 bg-steel-800 px-4 py-2.5 text-sm font-semibold text-steel-100 transition-all hover:border-brand-500 hover:bg-brand-600 hover:text-white"
-                >
-                  <SocialIcon icon={s.icon} />
-                  {s.name}
-                </a>
-              ) : (
-                <span
-                  key={s.name}
-                  title={`${s.name} — próximamente`}
-                  aria-disabled="true"
-                  className="inline-flex cursor-not-allowed items-center gap-2 rounded-xl border border-steel-800 bg-steel-800/40 px-4 py-2.5 text-sm font-semibold text-steel-500"
-                >
-                  <SocialIcon icon={s.icon} />
-                  {s.name}
-                </span>
-              ),
-            )}
-          </div>
+          {whatsappNumber && (
+            <a
+              href={waLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-whatsapp px-5 py-3 text-sm font-semibold text-white transition-all hover:bg-whatsapp-dark"
+            >
+              <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current" aria-hidden>
+                <path d="M17.47 14.38c-.29-.15-1.71-.84-1.97-.94-.26-.1-.46-.15-.65.15-.19.29-.75.94-.92 1.13-.17.19-.34.22-.63.07-.29-.15-1.22-.45-2.33-1.43-.86-.77-1.44-1.72-1.61-2.01-.17-.29-.02-.45.13-.59.13-.13.29-.34.44-.51.15-.17.19-.29.29-.48.1-.19.05-.36-.02-.51-.07-.15-.65-1.57-.89-2.15-.24-.57-.48-.49-.65-.5-.17-.01-.36-.01-.55-.01-.19 0-.51.07-.77.36-.26.29-1.01.99-1.01 2.41 0 1.42 1.03 2.79 1.18 2.98.15.19 2.03 3.1 4.92 4.35.69.3 1.22.47 1.64.6.69.22 1.31.19 1.81.12.55-.08 1.71-.7 1.95-1.37.24-.67.24-1.25.17-1.37-.07-.12-.26-.19-.55-.34zM12.04 2.5A9.5 9.5 0 0 0 2.55 12c0 1.67.44 3.31 1.27 4.75L2.5 21.5l4.87-1.28A9.46 9.46 0 0 0 12.04 21.5 9.5 9.5 0 0 0 21.5 12 9.5 9.5 0 0 0 12.04 2.5z" />
+              </svg>
+              Escribinos por WhatsApp
+            </a>
+          )}
         </div>
       </div>
 
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 md:grid-cols-3">
+      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 md:grid-cols-4">
         {/* Marca + tagline + confianza */}
         <div>
           <p className="text-lg font-semibold text-white">{settings.siteName}</p>
@@ -160,6 +134,37 @@ export async function Footer() {
             Cotiza por WhatsApp
           </a>
           )}
+        </div>
+
+        {/* Únete a nuestra comunidad — solo redes, el WhatsApp ya vive en la franja de arriba */}
+        <div>
+          <p className="font-medium text-white">Únete a nuestra comunidad</p>
+          <div className="mt-3 flex flex-wrap gap-2.5">
+            {socials.map((s) =>
+              s.href ? (
+                <a
+                  key={s.name}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={s.name}
+                  title={s.name}
+                  className="flex h-10 w-10 items-center justify-center rounded-xl border border-steel-700 bg-steel-800 text-steel-100 transition-all hover:border-brand-500 hover:bg-brand-600 hover:text-white"
+                >
+                  <SocialIcon icon={s.icon} />
+                </a>
+              ) : (
+                <span
+                  key={s.name}
+                  title={`${s.name} — próximamente`}
+                  aria-disabled="true"
+                  className="flex h-10 w-10 cursor-not-allowed items-center justify-center rounded-xl border border-steel-800 bg-steel-800/40 text-steel-500"
+                >
+                  <SocialIcon icon={s.icon} />
+                </span>
+              ),
+            )}
+          </div>
         </div>
 
         {/* Enlaces */}
