@@ -1,6 +1,5 @@
-import Link from "next/link";
-import { GenderBand } from "@/components/catalog/GenderBand";
 import { ProductCard } from "@/components/catalog/ProductCard";
+import { ProductCarousel } from "@/components/catalog/ProductCarousel";
 import { SortSelect } from "@/components/catalog/SortSelect";
 import { Pagination } from "@/components/catalog/Pagination";
 import {
@@ -17,8 +16,7 @@ import { buildStoreJsonLd } from "@/lib/jsonld";
 
 export const revalidate = 60;
 
-// Mismo lenguaje visual que las tarjetas de GenderBand, para que "Comprar
-// por edad" no se vea como una lista de píldoras de texto suelta.
+// Color de fondo del ícono cuando un rango de edad no tiene foto referencial.
 const AGE_CARD_COLORS = ["#fff7ed", "#fdf2f8", "#eff6ff", "#faf5ff", "#f0fdf4"];
 
 type CategoryOption = {
@@ -59,12 +57,6 @@ export default async function HomePage({ searchParams }: PageProps) {
     ctaLabel: campaign?.ctaLabel ?? "Ver catálogo",
     ctaUrl: campaign?.ctaUrl ?? "#productos",
   };
-  const genders = genderRaw.map((g) => ({
-    name: g.name,
-    slug: g.slug,
-    imageUrl: g.imageUrl,
-    total: g._count.products + g.children.reduce((sum, c) => sum + c._count.products, 0),
-  }));
 
   // Imagen referencial por rango de edad: la foto de un producto real que
   // calza en ese rango (no un stock-photo inventado, no hay ese dato en
@@ -82,20 +74,28 @@ export default async function HomePage({ searchParams }: PageProps) {
     ageImages[range.value] = match?.images[0]?.pathThumb ?? null;
   }
 
-  // Ciencia y Juego: categoría a resaltar (pedido explícito) — productos
-  // reales de sus subcategorías, no un "más vendidos" inventado (no hay
-  // ventas/featured registrados todavía).
   const ciencia = genderRaw.find((g) => g.slug === "ciencia-y-juego");
   const cienciaSlugs = new Set((ciencia?.children ?? []).map((c) => c.slug));
-  const cienciaShowcase = allProducts
-    .filter((p) => p.available && p.stock > 0 && cienciaSlugs.has(p.category.slug))
-    .slice(0, 8);
 
   // Recién llegados: señal real (fecha de alta), no un "recomendado" inventado.
   const newArrivals = [...allProducts]
     .filter((p) => p.available && p.stock > 0 && p.images.length > 0)
     .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-    .slice(0, 8);
+    .slice(0, 12);
+
+  // Un carrusel por categoría raíz (Ciencia y Juego primero, ya viene así
+  // por sortOrder) — productos reales de esa categoría y sus subcategorías,
+  // no un "más vendidos" inventado (no hay ventas/featured registrados
+  // todavía). Se omite la categoría si no junta un mínimo de productos.
+  const categoryCarousels = genderRaw
+    .map((g) => {
+      const slugs = new Set([g.slug, ...g.children.map((c) => c.slug)]);
+      const products = allProducts
+        .filter((p) => p.available && p.stock > 0 && p.images.length > 0 && slugs.has(p.category.slug))
+        .slice(0, 12);
+      return { name: g.name, slug: g.slug, products };
+    })
+    .filter((c) => c.products.length >= 4);
 
   const categoryMap = new Map<string, CategoryOption>();
   for (const p of allProducts) {
@@ -234,7 +234,7 @@ export default async function HomePage({ searchParams }: PageProps) {
           <h2 className="mb-4 font-display text-lg font-bold tracking-tight text-steel-900">
             Comprar por edad
           </h2>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-5 sm:gap-4">
+          <div className="flex flex-wrap gap-2.5">
             {AGE_RANGES.map((range, i) => {
               const active = filters.edad === range.value;
               const palette = AGE_CARD_COLORS[i % AGE_CARD_COLORS.length];
@@ -243,28 +243,24 @@ export default async function HomePage({ searchParams }: PageProps) {
                 <a
                   key={range.value}
                   href={`/?edad=${range.value}#productos`}
-                  className={`group relative flex aspect-[4/5] flex-col overflow-hidden rounded-2xl border transition-all hover:-translate-y-0.5 hover:shadow-md ${
+                  className={`flex items-center gap-2.5 rounded-xl border py-1.5 pl-1.5 pr-4 transition-all hover:-translate-y-0.5 hover:shadow-sm ${
                     active ? "border-brand-500 ring-2 ring-brand-200" : "border-steel-200 hover:border-brand-300"
                   }`}
-                  style={{ backgroundColor: image ? undefined : palette }}
                 >
-                  {image ? (
-                    <>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={image}
-                        alt=""
-                        aria-hidden="true"
-                        className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-                    </>
-                  ) : null}
                   <span
-                    className={`relative mt-auto p-3 text-sm font-bold sm:text-base ${
-                      image ? "text-white drop-shadow" : active ? "text-brand-700" : "text-steel-800"
-                    }`}
+                    className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-steel-100"
+                    style={{ backgroundColor: image ? undefined : palette }}
                   >
+                    {image ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img src={image} alt="" aria-hidden="true" className="h-full w-full object-cover" />
+                    ) : (
+                      <svg viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-brand-600 stroke-2" aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 1c-3.3 0-8 1.68-8 5v2h16v-2c0-3.32-4.7-5-8-5Z" />
+                      </svg>
+                    )}
+                  </span>
+                  <span className={`text-sm font-bold ${active ? "text-brand-700" : "text-steel-800"}`}>
                     {range.label}
                   </span>
                 </a>
@@ -306,9 +302,6 @@ export default async function HomePage({ searchParams }: PageProps) {
         </section>
       )}
 
-      {/* Banda principal por tipo de juego (categorías) */}
-      <GenderBand genders={genders} />
-
       {/* Productos + sidebar */}
       <section id="productos" className="mx-auto max-w-6xl px-4 py-10 scroll-mt-20">
         {allProducts.length === 0 ? (
@@ -323,41 +316,6 @@ export default async function HomePage({ searchParams }: PageProps) {
           </div>
         ) : (
           <>
-            {/* Categoría: navegación, separada de los filtros de abajo */}
-            <div className="mb-6">
-              <h3 className="mb-3 text-[11px] font-semibold text-steel-500">
-                Categoría
-              </h3>
-              <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                <Link
-                  href="/#productos"
-                  className={`shrink-0 rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${
-                    !filters.categoria
-                      ? "border-brand-500 bg-brand-600 text-white"
-                      : "border-steel-200 bg-white text-steel-700 hover:border-brand-300"
-                  }`}
-                >
-                  Todas
-                </Link>
-                {categoryOptions.map((cat) => (
-                  <a
-                    key={cat.slug}
-                    href={`/?categoria=${cat.slug}#productos`}
-                    className={`shrink-0 rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${
-                      filters.categoria === cat.slug
-                        ? "border-brand-500 bg-brand-600 text-white"
-                        : "border-steel-200 bg-white text-steel-700 hover:border-brand-300"
-                    }`}
-                  >
-                    {cat.name}
-                    <span className={filters.categoria === cat.slug ? "ml-1 text-white/70" : "ml-1 text-steel-400"}>
-                      ({cat.count})
-                    </span>
-                  </a>
-                ))}
-              </div>
-            </div>
-
           {hasActiveFilters ? (
           <div>
               <div className="mb-6 flex flex-wrap items-baseline justify-between gap-3 border-b border-steel-100 pb-3">
@@ -411,56 +369,12 @@ export default async function HomePage({ searchParams }: PageProps) {
           </div>
           ) : (
             <div className="space-y-10">
-              {/* Ciencia y Juego: categoría a resaltar */}
-              {cienciaShowcase.length > 0 && (
-                <div>
-                  <div className="mb-5 flex flex-wrap items-baseline justify-between gap-3 border-b border-steel-100 pb-3">
-                    <h2 className="font-display text-xl font-bold tracking-tight text-steel-900">
-                      Ciencia y Juego
-                    </h2>
-                    <Link
-                      href="/categoria/ciencia-y-juego"
-                      className="text-sm font-semibold text-brand-600 hover:text-brand-700 hover:underline"
-                    >
-                      Ver todo →
-                    </Link>
-                  </div>
-                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    {cienciaShowcase.map((product) => (
-                      <ProductCard
-                        key={product.id}
-                        id={product.id}
-                        name={product.name}
-                        sku={product.sku}
-                        slug={product.slug}
-                        categoryName={product.category.name}
-                        measure={product.measure}
-                        gauge={product.gauge}
-                        price={product.price}
-                        stock={product.stock}
-                        ageMin={product.ageMin}
-                        ageMax={product.ageMax}
-                        available={product.available}
-                        categorySlug={product.category.slug}
-                        image={product.images[0]}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-
               {/* Recién llegados: señal real (fecha de alta) */}
               {newArrivals.length > 0 && (
-                <div>
-                  <div className="mb-5 flex flex-wrap items-baseline justify-between gap-3 border-b border-steel-100 pb-3">
-                    <h2 className="font-display text-xl font-bold tracking-tight text-steel-900">
-                      Recién llegados
-                    </h2>
-                  </div>
-                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    {newArrivals.map((product) => (
+                <ProductCarousel title="Recién llegados">
+                  {newArrivals.map((product) => (
+                    <div key={product.id} className="w-40 shrink-0 [scroll-snap-align:start] sm:w-56">
                       <ProductCard
-                        key={product.id}
                         id={product.id}
                         name={product.name}
                         sku={product.sku}
@@ -476,10 +390,36 @@ export default async function HomePage({ searchParams }: PageProps) {
                         categorySlug={product.category.slug}
                         image={product.images[0]}
                       />
-                    ))}
-                  </div>
-                </div>
+                    </div>
+                  ))}
+                </ProductCarousel>
               )}
+
+              {/* Un carrusel por categoría — Ciencia y Juego primera */}
+              {categoryCarousels.map((cat) => (
+                <ProductCarousel key={cat.slug} title={cat.name} viewAllHref={`/categoria/${cat.slug}`}>
+                  {cat.products.map((product) => (
+                    <div key={product.id} className="w-40 shrink-0 [scroll-snap-align:start] sm:w-56">
+                      <ProductCard
+                        id={product.id}
+                        name={product.name}
+                        sku={product.sku}
+                        slug={product.slug}
+                        categoryName={product.category.name}
+                        measure={product.measure}
+                        gauge={product.gauge}
+                        price={product.price}
+                        stock={product.stock}
+                        ageMin={product.ageMin}
+                        ageMax={product.ageMax}
+                        available={product.available}
+                        categorySlug={product.category.slug}
+                        image={product.images[0]}
+                      />
+                    </div>
+                  ))}
+                </ProductCarousel>
+              ))}
             </div>
           )}
           </>
