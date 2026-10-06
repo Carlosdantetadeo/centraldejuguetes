@@ -12,13 +12,6 @@ export type FilterCounts = {
   ages: Record<string, number>;
 };
 
-export type CategoryOption = {
-  name: string;
-  slug: string;
-  count: number;
-  imageUrl?: string | null;
-};
-
 export type BrandOption = {
   name: string;
   count: number;
@@ -26,11 +19,10 @@ export type BrandOption = {
 
 type Props = {
   counts: FilterCounts;
-  categories?: CategoryOption[];
   brands?: BrandOption[];
 };
 
-export function FilterSidebar({ counts, categories, brands }: Props) {
+export function FilterSidebar({ counts, brands }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -96,47 +88,6 @@ export function FilterSidebar({ counts, categories, brands }: Props) {
 
   const filters = (
     <div className="space-y-6">
-      {/* Categoría — solo en home page */}
-      {categories && categories.length > 0 && (
-        <section>
-          <h3 className="mb-3 text-[11px] font-semibold text-steel-500">
-            Categoría
-          </h3>
-          <div className="space-y-2">
-            <label className="flex cursor-pointer items-center gap-2.5">
-              <input
-                type="radio"
-                name="categoria"
-                checked={!activeCategoria}
-                onChange={() => set("categoria", null)}
-                className="h-4 w-4 accent-brand-600"
-              />
-              <span className="text-sm text-steel-700">
-                Todas
-                <span className="ml-1 text-steel-400">({counts.total})</span>
-              </span>
-            </label>
-            <div className={categories.length > 8 ? "max-h-56 space-y-2 overflow-y-auto pr-1" : "space-y-2"}>
-              {categories.map((cat) => (
-                <label key={cat.slug} className="flex cursor-pointer items-center gap-2.5">
-                  <input
-                    type="radio"
-                    name="categoria"
-                    checked={activeCategoria === cat.slug}
-                    onChange={() => set("categoria", cat.slug)}
-                    className="h-4 w-4 accent-brand-600"
-                  />
-                  <span className="text-sm text-steel-700">
-                    {cat.name}
-                    <span className="ml-1 text-steel-400">({cat.count})</span>
-                  </span>
-                </label>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
       {/* Disponibilidad — "Con stock" es el default */}
       <section>
         <h3 className="mb-3 text-[11px] font-semibold text-steel-500">

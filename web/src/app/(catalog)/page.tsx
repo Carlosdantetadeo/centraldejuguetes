@@ -1,11 +1,18 @@
+import Link from "next/link";
 import { GenderBand } from "@/components/catalog/GenderBand";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import {
   FilterSidebar,
   type FilterCounts,
-  type CategoryOption,
   type BrandOption,
 } from "@/components/catalog/FilterSidebar";
+
+type CategoryOption = {
+  name: string;
+  slug: string;
+  count: number;
+  imageUrl?: string | null;
+};
 import { SortSelect } from "@/components/catalog/SortSelect";
 import { Pagination } from "@/components/catalog/Pagination";
 import {
@@ -338,8 +345,44 @@ export default async function HomePage({ searchParams }: PageProps) {
             <p className="mt-1 text-sm text-steel-500">El administrador puede agregarlos desde el panel.</p>
           </div>
         ) : (
+          <>
+            {/* Categoría: navegación, separada de los filtros de abajo */}
+            <div className="mb-6">
+              <h3 className="mb-3 text-[11px] font-semibold text-steel-500">
+                Categoría
+              </h3>
+              <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <Link
+                  href="/#productos"
+                  className={`shrink-0 rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${
+                    !filters.categoria
+                      ? "border-brand-500 bg-brand-600 text-white"
+                      : "border-steel-200 bg-white text-steel-700 hover:border-brand-300"
+                  }`}
+                >
+                  Todas
+                </Link>
+                {categoryOptions.map((cat) => (
+                  <a
+                    key={cat.slug}
+                    href={`/?categoria=${cat.slug}#productos`}
+                    className={`shrink-0 rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${
+                      filters.categoria === cat.slug
+                        ? "border-brand-500 bg-brand-600 text-white"
+                        : "border-steel-200 bg-white text-steel-700 hover:border-brand-300"
+                    }`}
+                  >
+                    {cat.name}
+                    <span className={filters.categoria === cat.slug ? "ml-1 text-white/70" : "ml-1 text-steel-400"}>
+                      ({cat.count})
+                    </span>
+                  </a>
+                ))}
+              </div>
+            </div>
+
           <div className="md:flex md:gap-8">
-            <FilterSidebar counts={counts} categories={categoryOptions} brands={brandOptions} />
+            <FilterSidebar counts={counts} brands={brandOptions} />
 
             <div className="min-w-0 flex-1">
               <div className="mb-6 flex flex-wrap items-baseline justify-between gap-3 border-b border-steel-100 pb-3">
@@ -392,6 +435,7 @@ export default async function HomePage({ searchParams }: PageProps) {
               )}
             </div>
           </div>
+          </>
         )}
       </section>
 
