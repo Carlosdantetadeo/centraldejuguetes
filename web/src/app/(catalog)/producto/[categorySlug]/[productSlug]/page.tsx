@@ -5,6 +5,7 @@ import { ProductGallery } from "@/components/catalog/ProductGallery";
 import { ProductPurchase } from "@/components/catalog/ProductPurchase";
 import { ProductViewTracker } from "@/components/catalog/ProductViewTracker";
 import { AskWhatsAppLink } from "@/components/catalog/AskWhatsAppLink";
+import { ProductStickyBar } from "@/components/catalog/ProductStickyBar";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { getProductBySlugs, getRelatedProducts } from "@/lib/catalog";
 import { getSiteSettings } from "@/lib/settings";
@@ -195,7 +196,7 @@ export default async function ProductPage({ params }: PageProps) {
           </div>
 
           {/* Selector de tallas + CTA de WhatsApp */}
-          <div className="mt-6 rounded-2xl border border-steel-200 bg-white p-5">
+          <div id="comprar-panel" className="mt-6 rounded-2xl border border-steel-200 bg-white p-5">
             <ProductPurchase
               id={product.id}
               sizes={sizes}
@@ -221,6 +222,16 @@ export default async function ProductPage({ params }: PageProps) {
               />
             )}
           </div>
+
+          <ProductStickyBar
+            targetId="comprar-panel"
+            productId={product.id}
+            name={displayName}
+            price={product.price}
+            currency={settings.currency}
+            locale={settings.locale}
+            whatsappHref={askWhatsAppUrl}
+          />
 
           {/* Trust strip */}
           <div className="mt-4 grid grid-cols-3 gap-2 text-center">
