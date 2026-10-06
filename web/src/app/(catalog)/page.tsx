@@ -1,18 +1,6 @@
 import Link from "next/link";
 import { GenderBand } from "@/components/catalog/GenderBand";
 import { ProductCard } from "@/components/catalog/ProductCard";
-import {
-  FilterSidebar,
-  type FilterCounts,
-  type BrandOption,
-} from "@/components/catalog/FilterSidebar";
-
-type CategoryOption = {
-  name: string;
-  slug: string;
-  count: number;
-  imageUrl?: string | null;
-};
 import { SortSelect } from "@/components/catalog/SortSelect";
 import { Pagination } from "@/components/catalog/Pagination";
 import {
@@ -28,6 +16,13 @@ import { JsonLd } from "@/components/JsonLd";
 import { buildStoreJsonLd } from "@/lib/jsonld";
 
 export const revalidate = 60;
+
+type CategoryOption = {
+  name: string;
+  slug: string;
+  count: number;
+  imageUrl?: string | null;
+};
 
 type PageProps = {
   searchParams: Promise<{
@@ -79,38 +74,9 @@ export default async function HomePage({ searchParams }: PageProps) {
     a.name.localeCompare(b.name, "es"),
   );
 
-  const brandMap = new Map<string, number>();
-  for (const p of allProducts) {
-    if (!p.brand) continue;
-    brandMap.set(p.brand, (brandMap.get(p.brand) ?? 0) + 1);
-  }
-  const brandOptions: BrandOption[] = [...brandMap.entries()]
-    .map(([name, count]) => ({ name, count }))
-    .sort((a, b) => a.name.localeCompare(b.name, "es"));
-
   const byCategory = filters.categoria
     ? allProducts.filter((p) => p.category.slug === filters.categoria)
     : allProducts;
-
-  const counts: FilterCounts = {
-    total: byCategory.length,
-    disponible: byCategory.filter((p) => p.available && p.stock > 0).length,
-    conFoto: byCategory.filter((p) => p.images.length > 0).length,
-    prices: Object.fromEntries(
-      PRICE_RANGES.map(({ value, min, max }) => [
-        value,
-        byCategory.filter((p) => p.price >= min && p.price < max).length,
-      ]),
-    ),
-    ages: Object.fromEntries(
-      AGE_RANGES.map((range) => [
-        range.value,
-        byCategory.filter(
-          (p) => p.ageMin != null && p.ageMax != null && p.ageMin <= range.max && p.ageMax >= range.min,
-        ).length,
-      ]),
-    ),
-  };
 
   // "Con stock" es el default (prompt-frontend §5): hay que pedir
   // disponible=0 explícito para ver también los productos sin stock.
@@ -381,10 +347,7 @@ export default async function HomePage({ searchParams }: PageProps) {
               </div>
             </div>
 
-          <div className="md:flex md:gap-8">
-            <FilterSidebar counts={counts} brands={brandOptions} />
-
-            <div className="min-w-0 flex-1">
+          <div>
               <div className="mb-6 flex flex-wrap items-baseline justify-between gap-3 border-b border-steel-100 pb-3">
                 <h2 className="font-display text-xl font-bold tracking-tight text-steel-900">
                   {filters.categoria
@@ -433,7 +396,6 @@ export default async function HomePage({ searchParams }: PageProps) {
                   <Pagination currentPage={currentPage} totalPages={totalPages} searchParams={filters} />
                 </>
               )}
-            </div>
           </div>
           </>
         )}
