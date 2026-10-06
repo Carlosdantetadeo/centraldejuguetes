@@ -16,9 +16,6 @@ import { buildStoreJsonLd } from "@/lib/jsonld";
 
 export const revalidate = 60;
 
-// Color de fondo del ícono cuando un rango de edad no tiene foto referencial.
-const AGE_CARD_COLORS = ["#fff7ed", "#fdf2f8", "#eff6ff", "#faf5ff", "#f0fdf4"];
-
 type CategoryOption = {
   name: string;
   slug: string;
@@ -58,21 +55,6 @@ export default async function HomePage({ searchParams }: PageProps) {
     ctaUrl: campaign?.ctaUrl ?? "#productos",
   };
 
-  // Imagen referencial por rango de edad: la foto de un producto real que
-  // calza en ese rango (no un stock-photo inventado, no hay ese dato en
-  // AGE_RANGES).
-  const ageImages: Record<string, string | null> = {};
-  for (const range of AGE_RANGES) {
-    const match = allProducts.find(
-      (p) =>
-        p.images.length > 0 &&
-        p.ageMin != null &&
-        p.ageMax != null &&
-        p.ageMin <= range.max &&
-        p.ageMax >= range.min,
-    );
-    ageImages[range.value] = match?.images[0]?.pathThumb ?? null;
-  }
 
   const ciencia = genderRaw.find((g) => g.slug === "ciencia-y-juego");
   const cienciaSlugs = new Set((ciencia?.children ?? []).map((c) => c.slug));
@@ -224,48 +206,6 @@ export default async function HomePage({ searchParams }: PageProps) {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
               </svg>
             </a>
-          </div>
-        </div>
-      </section>
-
-      {/* Comprar por edad */}
-      <section className="border-b border-steel-100 bg-white py-8">
-        <div className="mx-auto max-w-6xl px-4">
-          <h2 className="mb-4 font-display text-lg font-extrabold uppercase tracking-wide text-steel-900">
-            Comprar por edad
-          </h2>
-          <div className="flex flex-wrap gap-2.5">
-            {AGE_RANGES.map((range, i) => {
-              const active = filters.edad === range.value;
-              const palette = AGE_CARD_COLORS[i % AGE_CARD_COLORS.length];
-              const image = ageImages[range.value];
-              return (
-                <a
-                  key={range.value}
-                  href={`/?edad=${range.value}#productos`}
-                  className={`flex items-center gap-2.5 rounded-xl border py-1.5 pl-1.5 pr-4 transition-all hover:-translate-y-0.5 hover:shadow-sm ${
-                    active ? "border-brand-500 ring-2 ring-brand-200" : "border-steel-200 hover:border-brand-300"
-                  }`}
-                >
-                  <span
-                    className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-steel-100"
-                    style={{ backgroundColor: image ? undefined : palette }}
-                  >
-                    {image ? (
-                      /* eslint-disable-next-line @next/next/no-img-element */
-                      <img src={image} alt="" aria-hidden="true" className="h-full w-full object-cover" />
-                    ) : (
-                      <svg viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-brand-600 stroke-2" aria-hidden="true">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 1c-3.3 0-8 1.68-8 5v2h16v-2c0-3.32-4.7-5-8-5Z" />
-                      </svg>
-                    )}
-                  </span>
-                  <span className={`text-sm font-bold ${active ? "text-brand-700" : "text-steel-800"}`}>
-                    {range.label}
-                  </span>
-                </a>
-              );
-            })}
           </div>
         </div>
       </section>
