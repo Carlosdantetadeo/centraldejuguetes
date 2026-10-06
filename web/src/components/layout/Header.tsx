@@ -15,11 +15,13 @@ export async function Header() {
       name: c.name,
       slug: c.slug,
       count: c._count.products,
+      imageUrl: c.imageUrl,
     }));
     return {
       name: g.name,
       slug: g.slug,
       total: g._count.products + children.reduce((sum, c) => sum + c.count, 0),
+      imageUrl: g.imageUrl,
       children,
     };
   });
