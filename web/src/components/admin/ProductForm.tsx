@@ -26,6 +26,7 @@ type ProductFormProps = {
     gauge?: string | null;
     material?: string | null;
     price?: number;
+    compareAtPrice?: number | null;
     priceTiers?: unknown;
     stock?: number;
     available?: boolean;
@@ -205,7 +206,7 @@ export function ProductForm({ categories, action, initialValues }: ProductFormPr
           <h2 className="text-sm font-semibold text-steel-900">Precios (incluyen impuestos)</h2>
         </div>
 
-        <div className="grid gap-5 md:grid-cols-2">
+        <div className="grid gap-5 md:grid-cols-3">
           <Field
             label="Precio general (S/)"
             name="price"
@@ -215,6 +216,15 @@ export function ProductForm({ categories, action, initialValues }: ProductFormPr
             required
             placeholder="0.00"
             hint="Precio de referencia principal"
+          />
+          <Field
+            label="Precio tachado / antes del descuento (S/)"
+            name="compareAtPrice"
+            type="number"
+            step="0.01"
+            defaultValue={initialValues?.compareAtPrice?.toString() ?? ""}
+            placeholder="Dejar vacío = sin descuento"
+            hint="Si es mayor al precio general, la ficha muestra el descuento"
           />
           <Field
             label="Stock (unidades)"

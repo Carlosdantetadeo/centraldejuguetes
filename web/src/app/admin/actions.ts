@@ -43,6 +43,7 @@ export async function saveProductAction(formData: FormData) {
     gauge: formData.get("gauge") || undefined,
     material: formData.get("material") || undefined,
     price: formData.get("price") || 0,
+    compareAtPrice: formData.get("compareAtPrice") || "",
     stock: formData.get("stock"),
     available: formData.get("available") === "on",
     featured: formData.get("featured") === "on",
@@ -70,11 +71,13 @@ export async function saveProductAction(formData: FormData) {
 
   // batteriesIncluded es tri-estado (sí/no/no especificado): el select
   // llega como string, se convierte a boolean|null fuera del schema.
-  const { batteriesIncluded: batteriesRaw, ...rest } = parsed.data;
+  const { batteriesIncluded: batteriesRaw, compareAtPrice: compareAtPriceRaw, ...rest } = parsed.data;
   const batteriesIncluded =
     batteriesRaw === "true" ? true : batteriesRaw === "false" ? false : null;
+  // "" (sin descuento) se guarda como null, no como 0.
+  const compareAtPrice = compareAtPriceRaw === "" || compareAtPriceRaw == null ? null : compareAtPriceRaw;
 
-  const data = rest;
+  const data = { ...rest, compareAtPrice };
   const slug = data.slug?.trim() || slugify(data.name);
   const productId = formData.get("productId")?.toString();
   // Array cuando hay niveles; DbNull para limpiar la columna cuando no.

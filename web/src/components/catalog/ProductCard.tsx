@@ -12,6 +12,7 @@ type ProductCardProps = {
   measure?: string | null;
   gauge?: string | null;
   price: number;
+  compareAtPrice?: number | null;
   stock?: number;
   ageMin?: number | null;
   ageMax?: number | null;
@@ -33,6 +34,7 @@ export async function ProductCard({
   measure,
   gauge,
   price,
+  compareAtPrice,
   stock,
   ageMin,
   ageMax,
@@ -44,6 +46,10 @@ export async function ProductCard({
   const settings = await getSiteSettings();
   const displayName = formatProductName(name);
   const specs = [measure, gauge].filter(Boolean).join(" · ");
+  const hasDiscount = compareAtPrice != null && compareAtPrice > price;
+  const discountPct = hasDiscount
+    ? Math.round((1 - price / compareAtPrice) * 100)
+    : null;
   const productPath = `/producto/${categorySlug}/${slug}`;
   // Solo se muestra si el stock real es bajo — nunca un número inventado.
   const lowStock = available && typeof stock === "number" && stock > 0 && stock <= 5;
@@ -75,12 +81,16 @@ export async function ProductCard({
         </span>
       )}
 
-      {/* Badge de novedad — alta real reciente */}
-      {isNew && (
+      {/* Badge de descuento / novedad — descuento tiene prioridad visual */}
+      {hasDiscount ? (
+        <span className="absolute left-3 top-3 z-10 rounded-full bg-rose-600 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-white">
+          -{discountPct}%
+        </span>
+      ) : isNew ? (
         <span className="absolute left-3 top-3 z-10 rounded-full bg-brand-600 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-white">
           Nuevo
         </span>
-      )}
+      ) : null}
 
       {/* Clickable area: image + name */}
       <Link href={productPath} className="block">
@@ -126,7 +136,14 @@ export async function ProductCard({
       <div className="mt-auto border-t border-steel-100 px-4 py-3">
         <div className="flex items-end justify-between gap-2">
           <div className="min-w-0">
-            <p className="font-mono text-lg font-bold leading-none tracking-tight text-steel-900">
+            {hasDiscount && (
+              <p className="font-mono text-xs font-medium leading-none text-steel-400 line-through">
+                {formatPrice(compareAtPrice!, settings.currency, settings.locale)}
+              </p>
+            )}
+            <p
+              className={`font-mono text-lg font-bold leading-none tracking-tight ${hasDiscount ? "mt-1 text-rose-600" : "text-steel-900"}`}
+            >
               {formatPrice(price, settings.currency, settings.locale)}
             </p>
             <p className="mt-1 text-[10px] leading-tight text-steel-400">

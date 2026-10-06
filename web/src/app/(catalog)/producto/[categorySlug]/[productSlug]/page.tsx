@@ -70,6 +70,10 @@ export default async function ProductPage({ params }: PageProps) {
 
   const sizes = parseSizes(product.measure);
   const relatedProducts = await getRelatedProducts(product);
+  const hasDiscount = product.compareAtPrice != null && product.compareAtPrice > product.price;
+  const discountPct = hasDiscount
+    ? Math.round((1 - product.price / product.compareAtPrice!) * 100)
+    : null;
 
   const siteUrl = getSiteUrl();
   const productUrl = `${siteUrl}/producto/${categorySlug}/${productSlug}`;
@@ -173,26 +177,29 @@ export default async function ProductPage({ params }: PageProps) {
             </p>
           )}
 
-          {/* Precios: unidad + por mayor */}
-          <div className="mt-4 grid grid-cols-2 gap-3">
-            <div className="rounded-xl border border-steel-200 bg-steel-50 p-3">
-              <p className="text-xs font-medium text-steel-500">
-                Precio unitario
-              </p>
-              <p className="mt-1 font-mono text-2xl font-bold text-steel-900">
+          {/* Precio unitario, con descuento si corresponde */}
+          <div className="mt-4 rounded-xl border border-steel-200 bg-steel-50 p-4">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-xs font-medium text-steel-500">Precio unitario</p>
+              {hasDiscount && (
+                <span className="rounded-full bg-rose-600 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-white">
+                  -{discountPct}%
+                </span>
+              )}
+            </div>
+            <div className="mt-1 flex flex-wrap items-end gap-2">
+              <p
+                className={`font-mono text-3xl font-bold leading-none ${hasDiscount ? "text-rose-600" : "text-steel-900"}`}
+              >
                 {formatPrice(product.price, settings.currency, settings.locale)}
               </p>
-              <p className="mt-0.5 text-xs text-steel-500">{settings.priceLabel}</p>
+              {hasDiscount && (
+                <p className="font-mono text-base font-medium leading-none text-steel-400 line-through">
+                  {formatPrice(product.compareAtPrice!, settings.currency, settings.locale)}
+                </p>
+              )}
             </div>
-            <div className="rounded-xl border border-brand-200 bg-brand-50 p-3">
-              <p className="text-xs font-medium text-brand-600">
-                Precio por mayor
-              </p>
-              <p className="mt-1 font-display text-2xl font-bold text-brand-700">
-                A consultar
-              </p>
-              <p className="mt-0.5 text-xs text-brand-600">Consultá por WhatsApp</p>
-            </div>
+            <p className="mt-1 text-xs text-steel-500">{settings.priceLabel}</p>
           </div>
 
           {/* Selector de tallas + CTA de WhatsApp */}
@@ -228,6 +235,7 @@ export default async function ProductPage({ params }: PageProps) {
             productId={product.id}
             name={displayName}
             price={product.price}
+            compareAtPrice={product.compareAtPrice}
             currency={settings.currency}
             locale={settings.locale}
             whatsappHref={askWhatsAppUrl}
@@ -380,6 +388,7 @@ export default async function ProductPage({ params }: PageProps) {
                 measure={p.measure}
                 gauge={p.gauge}
                 price={p.price}
+                compareAtPrice={p.compareAtPrice}
                 stock={p.stock}
                 ageMin={p.ageMin}
                 ageMax={p.ageMax}

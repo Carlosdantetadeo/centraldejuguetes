@@ -34,6 +34,10 @@ export const productSchema = z.object({
   gauge: z.string().optional(),
   material: z.string().optional(),
   price: z.coerce.number().nonnegative("Precio inválido.").default(0),
+  // Precio tachado (antes del descuento). Vacío = sin descuento.
+  compareAtPrice: z
+    .union([z.coerce.number().nonnegative("Precio inválido."), z.literal("")])
+    .optional(),
   stock: z.coerce.number().int().min(0, "Stock inválido."),
   available: z.coerce.boolean().default(true),
   featured: z.coerce.boolean().default(false),

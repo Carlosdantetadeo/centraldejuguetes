@@ -104,6 +104,10 @@ model Product {
   gauge            String?
   material         String?
   price            Float          @default(0)
+  // Precio de referencia tachado (antes del descuento). Si está seteado y
+  // es mayor que `price`, la ficha/card muestran precio anterior tachado +
+  // precio actual + badge de % de descuento. Si es null, no hay descuento.
+  compareAtPrice   Float?
   // Niveles de precio editables por unidad (rollo, metro, ciento, millar…):
   // array JSON de { label: string, amount: number }.
   priceTiers       Json?

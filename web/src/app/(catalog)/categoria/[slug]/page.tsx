@@ -217,6 +217,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
                       measure={product.measure}
                       gauge={product.gauge}
                       price={product.price}
+                      compareAtPrice={product.compareAtPrice}
                       stock={product.stock}
                       ageMin={product.ageMin}
                       ageMax={product.ageMax}

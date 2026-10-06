@@ -9,6 +9,7 @@ type Props = {
   productId: string;
   name: string;
   price: number;
+  compareAtPrice?: number | null;
   currency: string;
   locale: string;
   whatsappHref: string | null;
@@ -17,8 +18,9 @@ type Props = {
 // Barra fija inferior (DESIGN-producto.md §3.6): aparece solo cuando el
 // panel de compra principal sale del viewport al hacer scroll, para que
 // el CTA nunca quede "perdido" en una ficha larga.
-export function ProductStickyBar({ targetId, productId, name, price, currency, locale, whatsappHref }: Props) {
+export function ProductStickyBar({ targetId, productId, name, price, compareAtPrice, currency, locale, whatsappHref }: Props) {
   const [visible, setVisible] = useState(false);
+  const hasDiscount = compareAtPrice != null && compareAtPrice > price;
   const observedRef = useRef<Element | null>(null);
 
   useEffect(() => {
@@ -45,9 +47,16 @@ export function ProductStickyBar({ targetId, productId, name, price, currency, l
       <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-2.5">
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold text-steel-900">{name}</p>
-          <p className="font-mono text-base font-bold text-steel-900">
-            {formatPrice(price, currency, locale)}
-          </p>
+          <div className="flex items-baseline gap-2">
+            <p className={`font-mono text-base font-bold ${hasDiscount ? "text-rose-600" : "text-steel-900"}`}>
+              {formatPrice(price, currency, locale)}
+            </p>
+            {hasDiscount && (
+              <p className="font-mono text-xs text-steel-400 line-through">
+                {formatPrice(compareAtPrice!, currency, locale)}
+              </p>
+            )}
+          </div>
         </div>
         <a
           href={whatsappHref}
