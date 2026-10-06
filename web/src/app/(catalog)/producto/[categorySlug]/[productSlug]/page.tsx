@@ -373,6 +373,7 @@ export default async function ProductPage({ params }: PageProps) {
                 ageMin={p.ageMin}
                 ageMax={p.ageMax}
                 available={p.available}
+                createdAt={p.createdAt}
                 categorySlug={p.category.slug}
                 image={p.images[0]}
               />

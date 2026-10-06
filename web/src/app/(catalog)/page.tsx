@@ -231,7 +231,7 @@ export default async function HomePage({ searchParams }: PageProps) {
       {/* Comprar por edad */}
       <section className="border-b border-steel-100 bg-white py-8">
         <div className="mx-auto max-w-6xl px-4">
-          <h2 className="mb-4 font-display text-lg font-bold tracking-tight text-steel-900">
+          <h2 className="mb-4 font-display text-lg font-extrabold uppercase tracking-wide text-steel-900">
             Comprar por edad
           </h2>
           <div className="flex flex-wrap gap-2.5">
@@ -274,7 +274,7 @@ export default async function HomePage({ searchParams }: PageProps) {
       {bestSellers.length > 0 && (
         <section className="border-b border-steel-100 bg-white py-10">
           <div className="mx-auto max-w-6xl px-4">
-            <h2 className="mb-5 font-display text-lg font-bold tracking-tight text-steel-900">
+            <h2 className="mb-5 font-display text-lg font-extrabold uppercase tracking-wide text-steel-900">
               Más vendidos
             </h2>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -293,6 +293,7 @@ export default async function HomePage({ searchParams }: PageProps) {
                   ageMin={product.ageMin}
                   ageMax={product.ageMax}
                   available={product.available}
+                  createdAt={product.createdAt}
                   categorySlug={product.category.slug}
                   image={product.images[0]}
                 />
@@ -358,6 +359,7 @@ export default async function HomePage({ searchParams }: PageProps) {
                         ageMin={product.ageMin}
                         ageMax={product.ageMax}
                         available={product.available}
+                  createdAt={product.createdAt}
                         categorySlug={product.category.slug}
                         image={product.images[0]}
                       />
@@ -387,6 +389,7 @@ export default async function HomePage({ searchParams }: PageProps) {
                         ageMin={product.ageMin}
                         ageMax={product.ageMax}
                         available={product.available}
+                  createdAt={product.createdAt}
                         categorySlug={product.category.slug}
                         image={product.images[0]}
                       />
@@ -413,6 +416,7 @@ export default async function HomePage({ searchParams }: PageProps) {
                         ageMin={product.ageMin}
                         ageMax={product.ageMax}
                         available={product.available}
+                  createdAt={product.createdAt}
                         categorySlug={product.category.slug}
                         image={product.images[0]}
                       />

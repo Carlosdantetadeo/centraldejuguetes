@@ -21,7 +21,7 @@ export function ProductCarousel({
   return (
     <div>
       <div className="mb-4 flex items-center justify-between gap-3">
-        <h2 className="font-display text-lg font-bold tracking-tight text-steel-900 sm:text-xl">
+        <h2 className="font-display text-lg font-extrabold uppercase tracking-wide text-steel-900 sm:text-xl">
           {title}
         </h2>
         <div className="flex items-center gap-3">

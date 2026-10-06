@@ -17,6 +17,7 @@ type ProductCardProps = {
   ageMax?: number | null;
   available: boolean;
   categorySlug: string;
+  createdAt?: Date;
   image?: {
     pathMedium: string;
     pathJpegFull: string;
@@ -37,6 +38,7 @@ export async function ProductCard({
   ageMax,
   available,
   categorySlug,
+  createdAt,
   image,
 }: ProductCardProps) {
   const settings = await getSiteSettings();
@@ -45,6 +47,13 @@ export async function ProductCard({
   const productPath = `/producto/${categorySlug}/${slug}`;
   // Solo se muestra si el stock real es bajo — nunca un número inventado.
   const lowStock = available && typeof stock === "number" && stock > 0 && stock <= 5;
+  // Badge "Nuevo": alta real en las últimas 72h. Ventana corta a propósito:
+  // el catálogo se importó en un solo lote, así que una ventana larga (ej.
+  // 21 días) marcaría el 100% del catálogo como "nuevo" — ruido, no señal.
+  // Server Component — se evalúa una vez por render en el servidor, no hay
+  // re-render de cliente que vuelva inestable el valor.
+  // eslint-disable-next-line react-hooks/purity
+  const isNew = createdAt != null && Date.now() - createdAt.getTime() < 72 * 60 * 60 * 1000;
   const ageLabel =
     ageMin != null && ageMax != null
       ? ageMin === ageMax
@@ -63,6 +72,13 @@ export async function ProductCard({
       ) : (
         <span className="absolute right-3 top-3 z-10 rounded-full bg-steel-900/90 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-sm">
           Sin stock
+        </span>
+      )}
+
+      {/* Badge de novedad — alta real reciente */}
+      {isNew && (
+        <span className="absolute left-3 top-3 z-10 rounded-full bg-brand-600 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-white">
+          Nuevo
         </span>
       )}
 
