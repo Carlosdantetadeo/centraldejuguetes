@@ -1,37 +1,25 @@
 import { getSiteSettings } from "@/lib/settings";
-import { getProductCount } from "@/lib/catalog";
 
-// Barra superior fija (prompt-frontend §4.1): horario, envíos, pagos
-// (SiteSettings) + confianza genérica del catálogo. Si un campo de
-// SiteSettings está vacío, no se muestra; los genéricos sí son fijos
-// porque no son un dato de negocio inventado, son valores del template.
+// Franja superior fija: un único mensaje (SiteSettings.shippingNote) en
+// cinta animada. Si está vacío, la franja entera se omite. La animación
+// respeta prefers-reduced-motion (ver globals.css, .animate-marquee).
 export async function TopBar() {
-  const [settings, productCount] = await Promise.all([
-    getSiteSettings(),
-    getProductCount(),
-  ]);
+  const settings = await getSiteSettings();
+  const message = settings.shippingNote?.trim();
 
-  const items = [
-    settings.businessHours,
-    settings.shippingNote,
-    settings.paymentMethods,
-    "Importado directo",
-    "Precios mayoristas",
-    productCount > 0 ? `+${productCount} modelos` : null,
-    "Respuesta rápida por WhatsApp",
-  ].filter((v): v is string => Boolean(v?.trim()));
+  if (!message) return null;
 
-  if (items.length === 0) return null;
+  // Se repite varias veces para que la cinta nunca se vea "vacía" en
+  // pantallas anchas, y la mitad se duplica para que el loop sea continuo.
+  const half = Array.from({ length: 8 }, () => message).join("   •   ");
 
   return (
-    <div className="bg-steel-900 text-steel-200">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-4 gap-y-1 px-4 py-1.5 text-center text-[11px] font-medium sm:text-xs">
-        {items.map((item, i) => (
-          <span key={i}>
-            {i > 0 && <span className="mr-4 text-steel-600">·</span>}
-            {item}
-          </span>
-        ))}
+    <div className="overflow-hidden bg-steel-900 text-steel-200">
+      <div className="flex animate-marquee whitespace-nowrap py-1.5 text-[11px] font-medium sm:text-xs">
+        <span className="px-4">{half}</span>
+        <span className="px-4" aria-hidden="true">
+          {half}
+        </span>
       </div>
     </div>
   );
