@@ -315,7 +315,7 @@ export default async function HomePage({ searchParams }: PageProps) {
               {newArrivals.length > 0 && (
                 <ProductCarousel title="Recién llegados">
                   {newArrivals.map((product) => (
-                    <div key={product.id} className="w-40 shrink-0 [scroll-snap-align:start] sm:w-56">
+                    <div key={product.id} className="[scroll-snap-align:start]">
                       <ProductCard
                         id={product.id}
                         name={product.name}
@@ -342,7 +342,7 @@ export default async function HomePage({ searchParams }: PageProps) {
               {categoryCarousels.map((cat) => (
                 <ProductCarousel key={cat.slug} title={cat.name} viewAllHref={`/categoria/${cat.slug}`}>
                   {cat.products.map((product) => (
-                    <div key={product.id} className="w-40 shrink-0 [scroll-snap-align:start] sm:w-56">
+                    <div key={product.id} className="[scroll-snap-align:start]">
                       <ProductCard
                         id={product.id}
                         name={product.name}

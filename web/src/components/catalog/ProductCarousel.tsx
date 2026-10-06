@@ -36,16 +36,24 @@ export function ProductCarousel({
   }, [checkScroll]);
 
   function scroll(dir: "left" | "right") {
-    scrollRef.current?.scrollBy({ left: dir === "right" ? 600 : -600, behavior: "smooth" });
+    const el = scrollRef.current;
+    if (!el) return;
+    // Avanza una "página" completa (el ancho visible), para que siempre
+    // quede un número entero de fichas a la vista — nunca una a la mitad.
+    el.scrollBy({ left: dir === "right" ? el.clientWidth : -el.clientWidth, behavior: "smooth" });
   }
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between gap-3">
-        <h2 className="font-display text-lg font-extrabold uppercase tracking-wide text-steel-900 sm:text-xl">
+      <div className="mb-4 flex items-center gap-3">
+        <h2 className="shrink-0 font-display text-lg font-extrabold uppercase tracking-wide text-steel-900 sm:text-xl">
           {title}
         </h2>
-        <div className="flex items-center gap-3">
+
+        {/* Línea que conecta el título con las flechas — indica "hay más" sin cortar una ficha */}
+        <div className="h-px min-w-6 flex-1 bg-steel-200" aria-hidden="true" />
+
+        <div className="flex shrink-0 items-center gap-3">
           {viewAllHref && (
             <Link
               href={viewAllHref}
@@ -79,23 +87,14 @@ export function ProductCarousel({
         </div>
       </div>
 
-      <div className="relative">
-        {/* Sombra izquierda: sugiere que hay más contenido hacia atrás */}
-        {canLeft && (
-          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-white to-transparent" />
-        )}
-
-        <div
-          ref={scrollRef}
-          className="flex gap-4 overflow-x-auto pb-1 [scroll-snap-type:x_mandatory] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        >
-          {children}
-        </div>
-
-        {/* Sombra derecha: sugiere "seguí la flecha", no corte abrupto */}
-        {canRight && (
-          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-14 bg-gradient-to-l from-white to-transparent" />
-        )}
+      {/* Grid con columnas calculadas para que siempre quepa un número
+         entero de fichas (2 en mobile, 3 en tablet, 4 en desktop) — nunca
+         una ficha cortada a la mitad en el borde. */}
+      <div
+        ref={scrollRef}
+        className="grid grid-flow-col auto-cols-[calc((100%-0.75rem)/2)] gap-3 overflow-x-auto pb-1 [scroll-snap-type:x_mandatory] [scrollbar-width:none] sm:auto-cols-[calc((100%-2*1rem)/3)] sm:gap-4 lg:auto-cols-[calc((100%-3*1rem)/4)] [&::-webkit-scrollbar]:hidden"
+      >
+        {children}
       </div>
     </div>
   );
