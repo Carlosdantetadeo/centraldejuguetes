@@ -17,6 +17,10 @@ import { buildStoreJsonLd } from "@/lib/jsonld";
 
 export const revalidate = 60;
 
+// Mismo lenguaje visual que las tarjetas de GenderBand, para que "Comprar
+// por edad" no se vea como una lista de píldoras de texto suelta.
+const AGE_CARD_COLORS = ["#fff7ed", "#fdf2f8", "#eff6ff", "#faf5ff", "#f0fdf4"];
+
 type CategoryOption = {
   name: string;
   slug: string;
@@ -61,6 +65,21 @@ export default async function HomePage({ searchParams }: PageProps) {
     imageUrl: g.imageUrl,
     total: g._count.products + g.children.reduce((sum, c) => sum + c._count.products, 0),
   }));
+
+  // Ciencia y Juego: categoría a resaltar (pedido explícito) — productos
+  // reales de sus subcategorías, no un "más vendidos" inventado (no hay
+  // ventas/featured registrados todavía).
+  const ciencia = genderRaw.find((g) => g.slug === "ciencia-y-juego");
+  const cienciaSlugs = new Set((ciencia?.children ?? []).map((c) => c.slug));
+  const cienciaShowcase = allProducts
+    .filter((p) => p.available && p.stock > 0 && cienciaSlugs.has(p.category.slug))
+    .slice(0, 8);
+
+  // Recién llegados: señal real (fecha de alta), no un "recomendado" inventado.
+  const newArrivals = [...allProducts]
+    .filter((p) => p.available && p.stock > 0 && p.images.length > 0)
+    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+    .slice(0, 8);
 
   const categoryMap = new Map<string, CategoryOption>();
   for (const p of allProducts) {
@@ -222,19 +241,33 @@ export default async function HomePage({ searchParams }: PageProps) {
             Comprar por edad
           </h2>
           <div className="flex gap-3 overflow-x-auto pb-1 sm:gap-4">
-            {AGE_RANGES.map((range) => (
-              <a
-                key={range.value}
-                href={`/?edad=${range.value}#productos`}
-                className={`flex shrink-0 flex-col items-center justify-center gap-1.5 rounded-full border px-5 py-5 text-center transition-all hover:-translate-y-0.5 hover:shadow-md sm:px-7 sm:py-6 ${
-                  filters.edad === range.value
-                    ? "border-brand-500 bg-brand-50 text-brand-700"
-                    : "border-steel-200 bg-steel-50 text-steel-700 hover:border-brand-300"
-                }`}
-              >
-                <span className="text-sm font-bold sm:text-base">{range.label}</span>
-              </a>
-            ))}
+            {AGE_RANGES.map((range, i) => {
+              const active = filters.edad === range.value;
+              const palette = AGE_CARD_COLORS[i % AGE_CARD_COLORS.length];
+              return (
+                <a
+                  key={range.value}
+                  href={`/?edad=${range.value}#productos`}
+                  className={`group flex shrink-0 flex-col items-center gap-2 rounded-2xl border px-6 py-5 text-center transition-all hover:-translate-y-0.5 hover:shadow-md sm:px-8 sm:py-6 ${
+                    active ? "border-brand-500 ring-2 ring-brand-200" : "border-steel-200 hover:border-brand-300"
+                  }`}
+                  style={{ backgroundColor: active ? undefined : palette }}
+                >
+                  <span
+                    className={`flex h-11 w-11 items-center justify-center rounded-full sm:h-12 sm:w-12 ${
+                      active ? "bg-brand-600 text-white" : "bg-white/70 text-brand-600"
+                    }`}
+                  >
+                    <svg viewBox="0 0 24 24" className="h-6 w-6 fill-none stroke-current stroke-2" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 1c-3.3 0-8 1.68-8 5v2h16v-2c0-3.32-4.7-5-8-5Z" />
+                    </svg>
+                  </span>
+                  <span className={`text-sm font-bold sm:text-base ${active ? "text-brand-700" : "text-steel-800"}`}>
+                    {range.label}
+                  </span>
+                </a>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -347,6 +380,7 @@ export default async function HomePage({ searchParams }: PageProps) {
               </div>
             </div>
 
+          {hasActiveFilters ? (
           <div>
               <div className="mb-6 flex flex-wrap items-baseline justify-between gap-3 border-b border-steel-100 pb-3">
                 <h2 className="font-display text-xl font-bold tracking-tight text-steel-900">
@@ -354,13 +388,13 @@ export default async function HomePage({ searchParams }: PageProps) {
                     ? (categoryOptions.find(
                         (c) => c.slug === filters.categoria,
                       )?.name ?? "Productos")
-                    : "Todos los productos"}
+                    : "Resultados"}
                 </h2>
                 <div className="flex items-center gap-3">
                   <span className="font-mono text-xs text-steel-500">
                     {sorted.length}{" "}
                     {sorted.length === 1 ? "producto" : "productos"}
-                    {hasActiveFilters ? " encontrados" : ""}
+                    {" encontrados"}
                   </span>
                   <SortSelect />
                 </div>
@@ -397,6 +431,79 @@ export default async function HomePage({ searchParams }: PageProps) {
                 </>
               )}
           </div>
+          ) : (
+            <div className="space-y-10">
+              {/* Ciencia y Juego: categoría a resaltar */}
+              {cienciaShowcase.length > 0 && (
+                <div>
+                  <div className="mb-5 flex flex-wrap items-baseline justify-between gap-3 border-b border-steel-100 pb-3">
+                    <h2 className="font-display text-xl font-bold tracking-tight text-steel-900">
+                      Ciencia y Juego
+                    </h2>
+                    <Link
+                      href="/categoria/ciencia-y-juego"
+                      className="text-sm font-semibold text-brand-600 hover:text-brand-700 hover:underline"
+                    >
+                      Ver todo →
+                    </Link>
+                  </div>
+                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    {cienciaShowcase.map((product) => (
+                      <ProductCard
+                        key={product.id}
+                        id={product.id}
+                        name={product.name}
+                        sku={product.sku}
+                        slug={product.slug}
+                        categoryName={product.category.name}
+                        measure={product.measure}
+                        gauge={product.gauge}
+                        price={product.price}
+                        stock={product.stock}
+                        ageMin={product.ageMin}
+                        ageMax={product.ageMax}
+                        available={product.available}
+                        categorySlug={product.category.slug}
+                        image={product.images[0]}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Recién llegados: señal real (fecha de alta) */}
+              {newArrivals.length > 0 && (
+                <div>
+                  <div className="mb-5 flex flex-wrap items-baseline justify-between gap-3 border-b border-steel-100 pb-3">
+                    <h2 className="font-display text-xl font-bold tracking-tight text-steel-900">
+                      Recién llegados
+                    </h2>
+                  </div>
+                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    {newArrivals.map((product) => (
+                      <ProductCard
+                        key={product.id}
+                        id={product.id}
+                        name={product.name}
+                        sku={product.sku}
+                        slug={product.slug}
+                        categoryName={product.category.name}
+                        measure={product.measure}
+                        gauge={product.gauge}
+                        price={product.price}
+                        stock={product.stock}
+                        ageMin={product.ageMin}
+                        ageMax={product.ageMax}
+                        available={product.available}
+                        categorySlug={product.category.slug}
+                        image={product.images[0]}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
           </>
         )}
       </section>

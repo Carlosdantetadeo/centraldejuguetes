@@ -21,14 +21,14 @@ export function CategoryNav({ genders }: { genders: GenderNavItem[] }) {
       className="hidden border-t border-steel-100 bg-white md:block"
     >
       <div className="mx-auto max-w-6xl px-4">
-        <ul className="flex items-center justify-center gap-2">
+        <ul className="flex flex-wrap items-center justify-center gap-x-1 gap-y-0.5">
           {genders.map((g) => {
             const empty = g.total === 0;
             return (
               <li key={g.slug} className="group relative">
                 <Link
                   href={`/categoria/${g.slug}`}
-                  className="flex items-center gap-1.5 px-4 py-3 text-sm font-semibold text-steel-700 transition-colors hover:text-brand-700"
+                  className="flex items-center gap-1 whitespace-nowrap px-2.5 py-2.5 text-[13px] font-semibold text-steel-700 transition-colors hover:text-brand-700"
                 >
                   {g.name}
                   {empty && (

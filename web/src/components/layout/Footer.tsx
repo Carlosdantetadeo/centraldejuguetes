@@ -42,13 +42,20 @@ export async function Footer() {
       {/* Únete a nuestra comunidad */}
       <div className="border-b border-steel-800 bg-gradient-to-r from-steel-900 via-steel-800 to-steel-900">
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-5 px-4 py-9 text-center sm:flex-row sm:justify-between sm:text-left">
-          <div>
-            <p className="font-display text-xl font-bold text-white sm:text-2xl">
-              Pedidos y cotizaciones
-            </p>
-            <p className="mt-1.5 text-sm text-steel-300">
-              Para consultas, novedades y precios mayoristas, escribinos directo.
-            </p>
+          <div className="flex items-center gap-4">
+            <span className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand-600/20 text-brand-400 sm:flex">
+              <svg viewBox="0 0 24 24" className="h-6 w-6 fill-none stroke-current stroke-2" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-3.75 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM21 12c0 4.556-4.03 8.25-9 8.25a9.76 9.76 0 0 1-4-.84L3 21l1.5-4.5A8.86 8.86 0 0 1 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
+              </svg>
+            </span>
+            <div>
+              <p className="font-display text-xl font-bold text-white sm:text-2xl">
+                Pedidos y cotizaciones
+              </p>
+              <p className="mt-1.5 text-sm text-steel-300">
+                Para consultas, novedades y precios mayoristas, escribinos directo.
+              </p>
+            </div>
           </div>
           <div className="flex flex-wrap justify-center gap-3">
             {whatsappNumber && (
@@ -81,7 +88,7 @@ export async function Footer() {
       </div>
 
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 md:grid-cols-3">
-        {/* Marca + tagline + redes */}
+        {/* Marca + tagline + confianza */}
         <div>
           <p className="text-lg font-semibold text-white">{settings.siteName}</p>
           {(settings.footerTagline || settings.siteDescription) && (
@@ -89,6 +96,16 @@ export async function Footer() {
               {settings.footerTagline || settings.siteDescription}
             </p>
           )}
+          <ul className="mt-4 space-y-2 text-xs text-steel-400">
+            {["Atención personalizada por WhatsApp", "Precios mayoristas y al detalle", "Catálogo actualizado permanentemente"].map((item) => (
+              <li key={item} className="flex items-center gap-2">
+                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 shrink-0 fill-none stroke-brand-500 stroke-2" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
+                {item}
+              </li>
+            ))}
+          </ul>
         </div>
 
         {/* Contacto */}

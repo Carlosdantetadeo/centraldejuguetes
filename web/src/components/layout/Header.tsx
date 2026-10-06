@@ -35,7 +35,7 @@ export async function Header() {
   return (
     <header className="border-b border-steel-200 bg-white/95 backdrop-blur-md shadow-sm">
       <div className="mx-auto max-w-6xl px-4">
-        <div className="flex items-center gap-4 py-3">
+        <div className="flex items-center gap-4 py-2.5">
           {/* Logo */}
           <Link
             href="/"
@@ -46,10 +46,10 @@ export async function Header() {
               <img
                 src={settings.logoUrl}
                 alt={settings.siteName}
-                className="h-10 w-auto sm:h-11"
+                className="h-14 w-auto sm:h-[72px]"
               />
             ) : (
-              <span className="font-display text-lg font-bold tracking-tight text-steel-900 sm:text-xl">
+              <span className="font-display text-xl font-bold tracking-tight text-steel-900 sm:text-2xl">
                 {settings.siteName}
               </span>
             )}
