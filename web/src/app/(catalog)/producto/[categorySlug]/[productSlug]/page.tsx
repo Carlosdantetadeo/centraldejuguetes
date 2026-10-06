@@ -65,9 +65,6 @@ export default async function ProductPage({ params }: PageProps) {
 
   const settings = await getSiteSettings();
   const displayName = formatProductName(product.name);
-  const priceTiers =
-    (product.priceTiers as { label: string; amount: number }[] | null) ?? [];
-
   const sizes = parseSizes(product.measure);
   const relatedProducts = await getRelatedProducts(product);
   const hasDiscount = product.compareAtPrice != null && product.compareAtPrice > product.price;
@@ -289,30 +286,6 @@ export default async function ProductPage({ params }: PageProps) {
                   </div>
                 ))}
               </dl>
-            </details>
-          )}
-
-          {/* Acordeón: Precios por volumen */}
-          {priceTiers.length > 0 && (
-            <details className="group mt-3 rounded-2xl border border-steel-200 bg-white" open>
-              <summary className="flex cursor-pointer select-none items-center justify-between px-5 py-4 text-sm font-semibold text-steel-900 marker:content-none">
-                Precios por volumen
-                <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 fill-none stroke-current stroke-2 transition-transform group-open:rotate-180" aria-hidden>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                </svg>
-              </summary>
-              <div className="border-t border-steel-100 px-5 pb-5 pt-4">
-                <div className="grid gap-2 sm:grid-cols-3">
-                  {priceTiers.map((tier, i) => (
-                    <div key={`${tier.label}-${i}`} className="rounded-xl border border-steel-200 bg-steel-50 px-3 py-2.5">
-                      <p className="text-[11px] font-medium text-steel-400">{tier.label}</p>
-                      <p className="mt-0.5 font-mono text-lg font-bold text-steel-900">
-                        {formatPrice(tier.amount, settings.currency, settings.locale)}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
             </details>
           )}
 

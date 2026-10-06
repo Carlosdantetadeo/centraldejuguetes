@@ -33,8 +33,7 @@ export function ProductPurchase({
   // Estado para modo tallas (ropa)
   const [sizeQty, setSizeQty] = useState<Record<string, number>>({});
 
-  // Estado para modo unidad/docena (juguetes sin tallas)
-  const [unitType, setUnitType] = useState<"unidad" | "docena">("unidad");
+  // Estado para modo cantidad simple (juguetes sin tallas)
   const [simpleQty, setSimpleQty] = useState(1);
 
   const [added, setAdded] = useState(false);
@@ -57,9 +56,7 @@ export function ProductPurchase({
 
   const handleAdd = () => {
     if (!canAdd) return;
-    const sizesData = hasSizes
-      ? chosen
-      : [{ size: unitType === "docena" ? "Docena (×12)" : "Unidad", qty: simpleQty }];
+    const sizesData = hasSizes ? chosen : [{ size: "Unidad", qty: simpleQty }];
 
     addItem({
       key: `${categorySlug}/${productSlug}`,
@@ -162,28 +159,10 @@ export function ProductPurchase({
         </div>
       )}
 
-      {/* ── Selector de cantidad unidad / docena (modo juguetes) ── */}
+      {/* ── Selector de cantidad (modo juguetes, precio unitario) ── */}
       {!hasSizes && (
         <div>
           <p className="mb-2 text-sm font-semibold text-steel-900">Cantidad a cotizar</p>
-
-          {/* Tabs unidad / docena */}
-          <div className="mb-3 flex gap-2">
-            {(["unidad", "docena"] as const).map((type) => (
-              <button
-                key={type}
-                type="button"
-                onClick={() => { setUnitType(type); setSimpleQty(1); }}
-                className={`flex-1 rounded-xl border py-2 text-sm font-semibold transition-colors ${
-                  unitType === type
-                    ? "border-brand-500 bg-brand-50 text-brand-700"
-                    : "border-steel-200 bg-white text-steel-600 hover:border-brand-300"
-                }`}
-              >
-                {type === "unidad" ? "Unidad" : "Docena (×12)"}
-              </button>
-            ))}
-          </div>
 
           {/* Contador +/- */}
           <div className="flex items-center gap-3">
@@ -211,11 +190,7 @@ export function ProductPurchase({
               </svg>
             </button>
             <span className="text-sm text-steel-500">
-              {unitType === "docena"
-                ? `= ${simpleQty * 12} unidades`
-                : simpleQty === 1
-                  ? "unidad"
-                  : "unidades"}
+              {simpleQty === 1 ? "unidad" : "unidades"}
             </span>
           </div>
         </div>
