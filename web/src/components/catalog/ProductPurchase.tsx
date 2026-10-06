@@ -112,7 +112,7 @@ export function ProductPurchase({
                 >
                   <span className="text-sm font-semibold text-steel-800">{size}</span>
                   {active ? (
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-2">
                       <button
                         type="button"
                         onClick={() => setSizeAmount(size, value - 1)}
@@ -154,7 +154,7 @@ export function ProductPurchase({
             })}
           </div>
 
-          <p className="mt-2 text-xs text-steel-500">
+          <p className="mt-2 text-xs text-steel-500" aria-live="polite">
             {chosen.length > 0
               ? `Seleccionado: ${chosen.map((s) => `${s.size} ×${s.qty}`).join(", ")} · ${totalPares} ${totalPares === 1 ? "par" : "pares"}`
               : "Elige la cantidad de cada talla que quieras cotizar."}
@@ -252,7 +252,7 @@ export function ProductPurchase({
         </button>
 
         {hasSizes && !canAdd && (
-          <p className="text-center text-xs text-steel-400">
+          <p className="text-center text-xs text-steel-500">
             Elige la cantidad de al menos una talla para agregar.
           </p>
         )}

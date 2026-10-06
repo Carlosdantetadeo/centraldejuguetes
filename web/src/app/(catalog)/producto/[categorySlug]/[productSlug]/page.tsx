@@ -172,22 +172,22 @@ export default async function ProductPage({ params }: PageProps) {
           {/* Precios: unidad + por mayor */}
           <div className="mt-4 grid grid-cols-2 gap-3">
             <div className="rounded-xl border border-steel-200 bg-steel-50 p-3">
-              <p className="text-[10px] font-medium text-steel-400">
+              <p className="text-xs font-medium text-steel-500">
                 Precio unitario
               </p>
               <p className="mt-1 font-mono text-2xl font-bold text-steel-900">
                 {formatPrice(product.price, settings.currency, settings.locale)}
               </p>
-              <p className="mt-0.5 text-[10px] text-steel-400">{settings.priceLabel}</p>
+              <p className="mt-0.5 text-xs text-steel-500">{settings.priceLabel}</p>
             </div>
             <div className="rounded-xl border border-brand-200 bg-brand-50 p-3">
-              <p className="text-[10px] font-medium text-brand-500">
+              <p className="text-xs font-medium text-brand-600">
                 Precio por mayor
               </p>
               <p className="mt-1 font-display text-2xl font-bold text-brand-700">
                 A consultar
               </p>
-              <p className="mt-0.5 text-[10px] text-brand-400">Consultá por WhatsApp</p>
+              <p className="mt-0.5 text-xs text-brand-600">Consultá por WhatsApp</p>
             </div>
           </div>
 
@@ -230,7 +230,7 @@ export default async function ProductPage({ params }: PageProps) {
                 <svg viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-brand-600 stroke-1.5" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" d={icon} />
                 </svg>
-                <span className="text-[10px] font-medium leading-tight text-steel-600">{label}</span>
+                <span className="text-xs font-medium leading-tight text-steel-600">{label}</span>
               </div>
             ))}
           </div>
@@ -341,7 +341,7 @@ export default async function ProductPage({ params }: PageProps) {
             </details>
           )}
 
-          <p className="mt-6 text-xs leading-5 text-steel-400">
+          <p className="mt-6 text-xs leading-5 text-steel-500">
             Al contactar por WhatsApp, {settings.siteName} tratará tus datos personales conforme a la
             política de privacidad publicada en este sitio.
           </p>

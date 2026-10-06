@@ -56,7 +56,7 @@ export function ProductGallery({ images, productName }: GalleryProps) {
               type="button"
               onClick={prev}
               aria-label="Imagen anterior"
-              className="absolute left-2 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 shadow-md ring-1 ring-steel-200 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-white focus-visible:opacity-100"
+              className="absolute left-2 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 shadow-md ring-1 ring-steel-200 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 hover:bg-white focus-visible:opacity-100"
             >
               <svg viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current stroke-2 text-steel-700" aria-hidden>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
@@ -66,7 +66,7 @@ export function ProductGallery({ images, productName }: GalleryProps) {
               type="button"
               onClick={next}
               aria-label="Imagen siguiente"
-              className="absolute right-2 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 shadow-md ring-1 ring-steel-200 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-white focus-visible:opacity-100"
+              className="absolute right-2 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 shadow-md ring-1 ring-steel-200 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 hover:bg-white focus-visible:opacity-100"
             >
               <svg viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current stroke-2 text-steel-700" aria-hidden>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
