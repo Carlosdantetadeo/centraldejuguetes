@@ -2,7 +2,6 @@ import Link from "next/link";
 import { GenderBand } from "@/components/catalog/GenderBand";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { SortSelect } from "@/components/catalog/SortSelect";
-import { PriceFilterSelect } from "@/components/catalog/PriceFilterSelect";
 import { Pagination } from "@/components/catalog/Pagination";
 import {
   getActiveCampaign,
@@ -272,16 +271,6 @@ export default async function HomePage({ searchParams }: PageProps) {
               );
             })}
           </div>
-        </div>
-      </section>
-
-      {/* Comprar por presupuesto */}
-      <section className="border-b border-steel-100 bg-steel-50 py-8">
-        <div className="mx-auto max-w-6xl px-4">
-          <h2 className="mb-4 font-display text-lg font-bold tracking-tight text-steel-900">
-            Comprar por presupuesto
-          </h2>
-          <PriceFilterSelect />
         </div>
       </section>
 
