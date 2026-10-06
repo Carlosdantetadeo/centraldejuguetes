@@ -8,6 +8,11 @@ export const productInclude = {
   },
 };
 
+// Conteo liviano para la franja superior (TopBar) — no trae filas, solo el total.
+export async function getProductCount() {
+  return prisma.product.count();
+}
+
 export async function getRootCategories() {
   // Regla 0: no publicar categorías vacías. Una raíz se muestra si tiene
   // productos propios O si alguna de sus subcategorías tiene productos.

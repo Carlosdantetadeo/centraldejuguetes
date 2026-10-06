@@ -2,6 +2,7 @@ import Link from "next/link";
 import { GenderBand } from "@/components/catalog/GenderBand";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { SortSelect } from "@/components/catalog/SortSelect";
+import { PriceFilterSelect } from "@/components/catalog/PriceFilterSelect";
 import { Pagination } from "@/components/catalog/Pagination";
 import {
   getActiveCampaign,
@@ -66,6 +67,22 @@ export default async function HomePage({ searchParams }: PageProps) {
     total: g._count.products + g.children.reduce((sum, c) => sum + c._count.products, 0),
   }));
 
+  // Imagen referencial por rango de edad: la foto de un producto real que
+  // calza en ese rango (no un stock-photo inventado, no hay ese dato en
+  // AGE_RANGES).
+  const ageImages: Record<string, string | null> = {};
+  for (const range of AGE_RANGES) {
+    const match = allProducts.find(
+      (p) =>
+        p.images.length > 0 &&
+        p.ageMin != null &&
+        p.ageMax != null &&
+        p.ageMin <= range.max &&
+        p.ageMax >= range.min,
+    );
+    ageImages[range.value] = match?.images[0]?.pathThumb ?? null;
+  }
+
   // Ciencia y Juego: categoría a resaltar (pedido explícito) — productos
   // reales de sus subcategorías, no un "más vendidos" inventado (no hay
   // ventas/featured registrados todavía).
@@ -89,9 +106,13 @@ export default async function HomePage({ searchParams }: PageProps) {
     }
     categoryMap.get(slug)!.count++;
   }
-  const categoryOptions = [...categoryMap.values()].sort((a, b) =>
-    a.name.localeCompare(b.name, "es"),
-  );
+  // Ciencia y Juego primero (categoría a resaltar), el resto alfabético.
+  const categoryOptions = [...categoryMap.values()].sort((a, b) => {
+    const aFirst = cienciaSlugs.has(a.slug);
+    const bFirst = cienciaSlugs.has(b.slug);
+    if (aFirst !== bFirst) return aFirst ? -1 : 1;
+    return a.name.localeCompare(b.name, "es");
+  });
 
   const byCategory = filters.categoria
     ? allProducts.filter((p) => p.category.slug === filters.categoria)
@@ -208,61 +229,43 @@ export default async function HomePage({ searchParams }: PageProps) {
         </div>
       </section>
 
-      {/* Trust badges strip */}
-      <section className="border-b border-steel-100 bg-white">
-        <div className="mx-auto max-w-6xl px-4 py-5">
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-            {[
-              { title: "Importado directo", sub: "Juguetes con respaldo de fábrica" },
-              { title: "Precios mayoristas", sub: "Por unidad y por docena" },
-              { title: `+${allProducts.length} modelos`, sub: "Catálogo actualizado permanentemente" },
-              { title: "Respuesta rápida", sub: "Cotizaciones vía WhatsApp" },
-            ].map((item, i) => (
-              <div key={i} className="flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
-                  <svg viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current stroke-2" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                  </svg>
-                </div>
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-steel-900">{item.title}</p>
-                  <p className="truncate text-xs text-steel-500">{item.sub}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Comprar por edad */}
       <section className="border-b border-steel-100 bg-white py-8">
         <div className="mx-auto max-w-6xl px-4">
           <h2 className="mb-4 font-display text-lg font-bold tracking-tight text-steel-900">
             Comprar por edad
           </h2>
-          <div className="flex gap-3 overflow-x-auto pb-1 sm:gap-4">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-5 sm:gap-4">
             {AGE_RANGES.map((range, i) => {
               const active = filters.edad === range.value;
               const palette = AGE_CARD_COLORS[i % AGE_CARD_COLORS.length];
+              const image = ageImages[range.value];
               return (
                 <a
                   key={range.value}
                   href={`/?edad=${range.value}#productos`}
-                  className={`group flex shrink-0 flex-col items-center gap-2 rounded-2xl border px-6 py-5 text-center transition-all hover:-translate-y-0.5 hover:shadow-md sm:px-8 sm:py-6 ${
+                  className={`group relative flex aspect-[4/5] flex-col overflow-hidden rounded-2xl border transition-all hover:-translate-y-0.5 hover:shadow-md ${
                     active ? "border-brand-500 ring-2 ring-brand-200" : "border-steel-200 hover:border-brand-300"
                   }`}
-                  style={{ backgroundColor: active ? undefined : palette }}
+                  style={{ backgroundColor: image ? undefined : palette }}
                 >
+                  {image ? (
+                    <>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={image}
+                        alt=""
+                        aria-hidden="true"
+                        className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                    </>
+                  ) : null}
                   <span
-                    className={`flex h-11 w-11 items-center justify-center rounded-full sm:h-12 sm:w-12 ${
-                      active ? "bg-brand-600 text-white" : "bg-white/70 text-brand-600"
+                    className={`relative mt-auto p-3 text-sm font-bold sm:text-base ${
+                      image ? "text-white drop-shadow" : active ? "text-brand-700" : "text-steel-800"
                     }`}
                   >
-                    <svg viewBox="0 0 24 24" className="h-6 w-6 fill-none stroke-current stroke-2" aria-hidden="true">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 1c-3.3 0-8 1.68-8 5v2h16v-2c0-3.32-4.7-5-8-5Z" />
-                    </svg>
-                  </span>
-                  <span className={`text-sm font-bold sm:text-base ${active ? "text-brand-700" : "text-steel-800"}`}>
                     {range.label}
                   </span>
                 </a>
@@ -278,21 +281,7 @@ export default async function HomePage({ searchParams }: PageProps) {
           <h2 className="mb-4 font-display text-lg font-bold tracking-tight text-steel-900">
             Comprar por presupuesto
           </h2>
-          <div className="flex flex-wrap gap-3">
-            {PRICE_RANGES.map((range) => (
-              <a
-                key={range.value}
-                href={`/?precio=${range.value}#productos`}
-                className={`rounded-xl border px-5 py-3 text-sm font-semibold transition-all hover:-translate-y-0.5 hover:shadow-md ${
-                  filters.precio === range.value
-                    ? "border-brand-500 bg-brand-600 text-white"
-                    : "border-steel-200 bg-white text-steel-700 hover:border-brand-300"
-                }`}
-              >
-                {range.label}
-              </a>
-            ))}
-          </div>
+          <PriceFilterSelect />
         </div>
       </section>
 
