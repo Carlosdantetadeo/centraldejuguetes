@@ -31,11 +31,13 @@ export async function Footer() {
   const mapsUrl = settings.address
     ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(settings.address)}`
     : null;
+  // Se muestran los 3 íconos siempre — los que todavía no tienen link
+  // propio quedan sin href (no son un enlace roto, son "próximamente").
   const socials = [
     { name: "Facebook", href: settings.socialFacebook, icon: "facebook" },
     { name: "Instagram", href: settings.socialInstagram, icon: "instagram" },
     { name: "TikTok", href: settings.socialTiktok, icon: "tiktok" },
-  ].filter((s): s is { name: string; href: string; icon: string } => Boolean(s.href));
+  ];
 
   return (
     <footer className="mt-auto border-t border-steel-800 bg-steel-900 text-steel-100">
@@ -71,18 +73,30 @@ export async function Footer() {
                 WhatsApp
               </a>
             )}
-            {socials.map((s) => (
-              <a
-                key={s.name}
-                href={s.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-xl border border-steel-700 bg-steel-800 px-4 py-2.5 text-sm font-semibold text-steel-100 transition-all hover:border-brand-500 hover:bg-brand-600 hover:text-white"
-              >
-                <SocialIcon icon={s.icon} />
-                {s.name}
-              </a>
-            ))}
+            {socials.map((s) =>
+              s.href ? (
+                <a
+                  key={s.name}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-xl border border-steel-700 bg-steel-800 px-4 py-2.5 text-sm font-semibold text-steel-100 transition-all hover:border-brand-500 hover:bg-brand-600 hover:text-white"
+                >
+                  <SocialIcon icon={s.icon} />
+                  {s.name}
+                </a>
+              ) : (
+                <span
+                  key={s.name}
+                  title={`${s.name} — próximamente`}
+                  aria-disabled="true"
+                  className="inline-flex cursor-not-allowed items-center gap-2 rounded-xl border border-steel-800 bg-steel-800/40 px-4 py-2.5 text-sm font-semibold text-steel-500"
+                >
+                  <SocialIcon icon={s.icon} />
+                  {s.name}
+                </span>
+              ),
+            )}
           </div>
         </div>
       </div>
