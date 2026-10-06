@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ProductGallery } from "@/components/catalog/ProductGallery";
 import { ProductPurchase } from "@/components/catalog/ProductPurchase";
@@ -7,7 +8,7 @@ import { AskWhatsAppLink } from "@/components/catalog/AskWhatsAppLink";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { getProductBySlugs, getRelatedProducts } from "@/lib/catalog";
 import { getSiteSettings } from "@/lib/settings";
-import { formatPrice, getSiteUrl } from "@/lib/utils";
+import { formatPrice, formatProductName, getSiteUrl } from "@/lib/utils";
 import { buildWhatsAppUrl, getProductUrl } from "@/lib/whatsapp";
 import { JsonLd } from "@/components/JsonLd";
 import { buildBreadcrumbJsonLd, buildProductJsonLd } from "@/lib/jsonld";
@@ -37,16 +38,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const product = await getProductBySlugs(categorySlug, productSlug);
   if (!product) return { title: "Producto no encontrado" };
 
+  const displayName = formatProductName(product.name);
   const description =
     product.description ??
-    `${product.name}. ${[product.measure, product.gauge, product.material].filter(Boolean).join(" · ")}`;
+    `${displayName}. ${[product.measure, product.gauge, product.material].filter(Boolean).join(" · ")}`;
 
   return {
-    title: product.name,
+    title: displayName,
     description,
     alternates: { canonical: getProductUrl(categorySlug, productSlug) },
     openGraph: {
-      title: product.name,
+      title: displayName,
       description,
       images: product.images[0]
         ? [{ url: product.images[0].pathFull, alt: product.images[0].altText }]
@@ -61,6 +63,7 @@ export default async function ProductPage({ params }: PageProps) {
   if (!product) notFound();
 
   const settings = await getSiteSettings();
+  const displayName = formatProductName(product.name);
   const priceTiers =
     (product.priceTiers as { label: string; amount: number }[] | null) ?? [];
 
@@ -72,11 +75,11 @@ export default async function ProductPage({ params }: PageProps) {
   const breadcrumbItems = [
     { name: "Inicio", url: siteUrl },
     { name: product.category.name, url: `${siteUrl}/categoria/${product.category.slug}` },
-    { name: product.name, url: productUrl },
+    { name: displayName, url: productUrl },
   ];
   const askWhatsAppUrl = settings.whatsappNumber
     ? buildWhatsAppUrl(
-        { name: product.name, sku: product.sku, productUrl, available: product.available },
+        { name: displayName, sku: product.sku, productUrl, available: product.available },
         settings.whatsappNumber,
       )
     : null;
@@ -100,7 +103,7 @@ export default async function ProductPage({ params }: PageProps) {
       <JsonLd
         data={buildProductJsonLd(
           {
-            name: product.name,
+            name: displayName,
             description: product.description,
             sku: product.sku,
             brand: product.brand,
@@ -126,7 +129,7 @@ export default async function ProductPage({ params }: PageProps) {
 
       {/* Breadcrumb */}
       <nav className="mb-6 flex items-center gap-2 text-sm text-steel-500">
-        <a href="/" className="hover:text-brand-700 transition-colors">Inicio</a>
+        <Link href="/" className="hover:text-brand-700 transition-colors">Inicio</Link>
         <svg viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-current stroke-1.5" aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
         </svg>
@@ -136,13 +139,13 @@ export default async function ProductPage({ params }: PageProps) {
         <svg viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-current stroke-1.5" aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
         </svg>
-        <span className="truncate font-medium text-steel-800">{product.name}</span>
+        <span className="truncate font-medium text-steel-800">{displayName}</span>
       </nav>
 
       <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
         {/* Gallery */}
         <div className="lg:sticky lg:top-24 lg:self-start">
-          <ProductGallery images={product.images} productName={product.name} />
+          <ProductGallery images={product.images} productName={displayName} />
         </div>
 
         {/* Product info */}
@@ -161,7 +164,7 @@ export default async function ProductPage({ params }: PageProps) {
           </div>
 
           <h1 className="mt-2 font-display text-2xl font-bold leading-tight tracking-tight text-steel-900 sm:text-3xl">
-            {product.name}
+            {displayName}
           </h1>
           {product.sku && (
             <p className="mt-1 font-mono text-xs font-medium text-brand-600">
@@ -198,7 +201,7 @@ export default async function ProductPage({ params }: PageProps) {
               sizes={sizes}
               categorySlug={categorySlug}
               productSlug={productSlug}
-              name={product.name}
+              name={displayName}
               sku={product.sku}
               price={product.price}
               currency={settings.currency}
@@ -212,7 +215,7 @@ export default async function ProductPage({ params }: PageProps) {
               <AskWhatsAppLink
                 href={askWhatsAppUrl}
                 productId={product.id}
-                name={product.name}
+                name={displayName}
                 price={product.price}
                 currency={settings.currency}
               />

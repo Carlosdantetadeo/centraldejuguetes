@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Scripts de mantenimiento/importación (no forman parte del build de
+    // Next) y skills de Claude Code vendored — no son código de la app.
+    "scripts/**",
+    ".claude/**",
   ]),
 ]);
 

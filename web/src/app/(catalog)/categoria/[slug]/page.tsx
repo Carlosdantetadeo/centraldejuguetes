@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import {
@@ -68,7 +69,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
   }
   const brandOptions: BrandOption[] = [...brandMap.entries()]
     .map(([name, count]) => ({ name, count }))
-    .sort((a, b) => b.count - a.count);
+    .sort((a, b) => a.name.localeCompare(b.name, "es"));
 
   // Counts para el sidebar (sobre todos los productos, sin filtrar)
   const counts: FilterCounts = {
@@ -149,7 +150,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
 
       {/* Breadcrumb */}
       <nav className="mb-4 flex items-center gap-2 text-sm text-steel-500">
-        <a href="/" className="hover:text-brand-700 transition-colors">Inicio</a>
+        <Link href="/" className="hover:text-brand-700 transition-colors">Inicio</Link>
         <svg viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-current stroke-1.5" aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
         </svg>

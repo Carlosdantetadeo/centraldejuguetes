@@ -73,7 +73,8 @@ export function FilterSidebar({ counts, categories, brands }: Props) {
 
   function set(key: string, value: string | null) {
     const params = new URLSearchParams(searchParams.toString());
-    value ? params.set(key, value) : params.delete(key);
+    if (value) params.set(key, value);
+    else params.delete(key);
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
   }
 
@@ -115,21 +116,23 @@ export function FilterSidebar({ counts, categories, brands }: Props) {
                 <span className="ml-1 text-steel-400">({counts.total})</span>
               </span>
             </label>
-            {categories.map((cat) => (
-              <label key={cat.slug} className="flex cursor-pointer items-center gap-2.5">
-                <input
-                  type="radio"
-                  name="categoria"
-                  checked={activeCategoria === cat.slug}
-                  onChange={() => set("categoria", cat.slug)}
-                  className="h-4 w-4 accent-brand-600"
-                />
-                <span className="text-sm text-steel-700">
-                  {cat.name}
-                  <span className="ml-1 text-steel-400">({cat.count})</span>
-                </span>
-              </label>
-            ))}
+            <div className={categories.length > 8 ? "max-h-56 space-y-2 overflow-y-auto pr-1" : "space-y-2"}>
+              {categories.map((cat) => (
+                <label key={cat.slug} className="flex cursor-pointer items-center gap-2.5">
+                  <input
+                    type="radio"
+                    name="categoria"
+                    checked={activeCategoria === cat.slug}
+                    onChange={() => set("categoria", cat.slug)}
+                    className="h-4 w-4 accent-brand-600"
+                  />
+                  <span className="text-sm text-steel-700">
+                    {cat.name}
+                    <span className="ml-1 text-steel-400">({cat.count})</span>
+                  </span>
+                </label>
+              ))}
+            </div>
           </div>
         </section>
       )}
@@ -215,21 +218,23 @@ export function FilterSidebar({ counts, categories, brands }: Props) {
               />
               <span className="text-sm text-steel-700">Todas las marcas</span>
             </label>
-            {brands.map((b) => (
-              <label key={b.name} className="flex cursor-pointer items-center gap-2.5">
-                <input
-                  type="radio"
-                  name="marca"
-                  checked={activeMarca === b.name}
-                  onChange={() => set("marca", b.name)}
-                  className="h-4 w-4 accent-brand-600"
-                />
-                <span className="text-sm text-steel-700">
-                  {b.name}
-                  <span className="ml-1 text-steel-400">({b.count})</span>
-                </span>
-              </label>
-            ))}
+            <div className={brands.length > 8 ? "max-h-56 space-y-2.5 overflow-y-auto pr-1" : "space-y-2.5"}>
+              {brands.map((b) => (
+                <label key={b.name} className="flex cursor-pointer items-center gap-2.5">
+                  <input
+                    type="radio"
+                    name="marca"
+                    checked={activeMarca === b.name}
+                    onChange={() => set("marca", b.name)}
+                    className="h-4 w-4 accent-brand-600"
+                  />
+                  <span className="text-sm text-steel-700">
+                    {b.name}
+                    <span className="ml-1 text-steel-400">({b.count})</span>
+                  </span>
+                </label>
+              ))}
+            </div>
           </div>
         </section>
       )}

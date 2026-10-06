@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { searchProducts } from "@/lib/catalog";
 
@@ -23,7 +24,7 @@ export default async function SearchPage({ searchParams }: PageProps) {
     <div className="mx-auto max-w-6xl px-4 py-10">
       {/* Breadcrumb */}
       <nav className="mb-4 flex items-center gap-2 text-sm text-steel-500">
-        <a href="/" className="hover:text-brand-700 transition-colors">Inicio</a>
+        <Link href="/" className="hover:text-brand-700 transition-colors">Inicio</Link>
         <svg viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-current stroke-1.5" aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
         </svg>

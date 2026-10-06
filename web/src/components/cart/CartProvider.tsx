@@ -90,6 +90,8 @@ export function CartProvider({
     const raw = readLocalStorage(STORAGE_KEY);
     if (raw) {
       try {
+        // Hidrata desde localStorage (sistema externo, no disponible en SSR).
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setItems(JSON.parse(raw));
       } catch {
         /* carrito corrupto, se ignora */

@@ -17,7 +17,7 @@ export async function TopBar() {
     <div className="bg-steel-900 text-steel-200">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-4 gap-y-1 px-4 py-1.5 text-center text-[11px] font-medium sm:text-xs">
         {items.map((item, i) => (
-          <span key={i} className="whitespace-nowrap">
+          <span key={i}>
             {i > 0 && <span className="mr-4 text-steel-600">·</span>}
             {item}
           </span>

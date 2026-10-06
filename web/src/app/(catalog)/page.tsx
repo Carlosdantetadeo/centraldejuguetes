@@ -68,8 +68,8 @@ export default async function HomePage({ searchParams }: PageProps) {
     }
     categoryMap.get(slug)!.count++;
   }
-  const categoryOptions = [...categoryMap.values()].sort(
-    (a, b) => b.count - a.count,
+  const categoryOptions = [...categoryMap.values()].sort((a, b) =>
+    a.name.localeCompare(b.name, "es"),
   );
 
   const brandMap = new Map<string, number>();
@@ -79,7 +79,7 @@ export default async function HomePage({ searchParams }: PageProps) {
   }
   const brandOptions: BrandOption[] = [...brandMap.entries()]
     .map(([name, count]) => ({ name, count }))
-    .sort((a, b) => b.count - a.count);
+    .sort((a, b) => a.name.localeCompare(b.name, "es"));
 
   const byCategory = filters.categoria
     ? allProducts.filter((p) => p.category.slug === filters.categoria)
@@ -223,7 +223,7 @@ export default async function HomePage({ searchParams }: PageProps) {
             {[
               { title: "Importado directo", sub: "Juguetes con respaldo de fábrica" },
               { title: "Precios mayoristas", sub: "Por unidad y por docena" },
-              { title: "+150 modelos", sub: "Catálogo actualizado permanentemente" },
+              { title: `+${allProducts.length} modelos`, sub: "Catálogo actualizado permanentemente" },
               { title: "Respuesta rápida", sub: "Cotizaciones vía WhatsApp" },
             ].map((item, i) => (
               <div key={i} className="flex items-center gap-3">
@@ -338,16 +338,10 @@ export default async function HomePage({ searchParams }: PageProps) {
             <p className="mt-1 text-sm text-steel-500">El administrador puede agregarlos desde el panel.</p>
           </div>
         ) : (
-          <div className="flex gap-8">
-            <div className="hidden md:block">
-              <FilterSidebar counts={counts} categories={categoryOptions} brands={brandOptions} />
-            </div>
+          <div className="md:flex md:gap-8">
+            <FilterSidebar counts={counts} categories={categoryOptions} brands={brandOptions} />
 
             <div className="min-w-0 flex-1">
-              <div className="md:hidden">
-                <FilterSidebar counts={counts} categories={categoryOptions} brands={brandOptions} />
-              </div>
-
               <div className="mb-6 flex flex-wrap items-baseline justify-between gap-3 border-b border-steel-100 pb-3">
                 <h2 className="font-display text-xl font-bold tracking-tight text-steel-900">
                   {filters.categoria

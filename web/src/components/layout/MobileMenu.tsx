@@ -10,6 +10,9 @@ export function MobileMenu({ genders }: { genders: GenderNavItem[] }) {
   const pathname = usePathname();
 
   useEffect(() => {
+    // Sincroniza con el router (sistema externo): cierra el drawer cuando
+    // cambia la URL, sin importar qué lo navegó.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setOpen(false);
   }, [pathname]);
 

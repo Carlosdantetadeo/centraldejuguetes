@@ -20,8 +20,8 @@ export default async function AdminGeoQueriesPage() {
       <div>
         <h1 className="text-2xl font-bold text-steel-900">Consultas objetivo (GEO)</h1>
         <p className="mt-1 text-steel-600">
-          20–30 búsquedas reales que le harías a un motor de IA (ej. "juguetes didácticos Lima",
-          "regalo niño 5 años menos de 100 soles"). Revisión <strong>manual</strong> y mensual: marca
+          20–30 búsquedas reales que le harías a un motor de IA (ej. &ldquo;juguetes didácticos Lima&rdquo;,
+          &ldquo;regalo niño 5 años menos de 100 soles&rdquo;). Revisión <strong>manual</strong> y mensual: marca
           si la tienda aparece o es citada en cada motor — nada de scraping automatizado.
         </p>
       </div>
