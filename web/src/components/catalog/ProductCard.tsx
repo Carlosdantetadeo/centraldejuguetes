@@ -62,7 +62,7 @@ export async function ProductCard({
       : null;
 
   return (
-    <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-steel-200 bg-white transition-all duration-300 hover:border-brand-300 hover:shadow-xl hover:shadow-steel-900/8 hover:-translate-y-0.5">
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-steel-200 bg-white transition-all duration-300 hover:border-brand-300 hover:shadow-xl hover:shadow-steel-900/8 hover:-translate-y-0.5">
       {/* Badge de stock */}
       {available ? (
         <span className="absolute right-3 top-3 z-10 inline-flex items-center gap-1 rounded-full bg-emerald-500/90 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-sm">
@@ -110,7 +110,7 @@ export async function ProductCard({
               {sku}
             </p>
           ) : null}
-          <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-steel-900 transition-colors group-hover:text-brand-700">
+          <h3 className="line-clamp-2 min-h-[35px] text-sm font-semibold leading-snug text-steel-900 transition-colors group-hover:text-brand-700">
             {displayName}
           </h3>
           {specs ? (
