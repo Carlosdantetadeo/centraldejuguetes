@@ -54,7 +54,7 @@ export function CartFab() {
 
   function buildMessage(code?: string): string {
     const lines = [
-      "¡Hola! 🧸 Me encantó su catálogo y quiero cotizar estos productos:",
+      "¡Hola! 🧸 Quiero cotizar estos productos que elegí:",
       code ? `Pedido #${code}` : "",
       "",
       ...items.map((it) => {
