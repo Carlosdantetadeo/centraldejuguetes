@@ -178,6 +178,9 @@ export async function Footer() {
               <Link href="/buscar" className="hover:text-white transition-colors">Buscar productos</Link>
             </li>
             <li>
+              <Link href="/guias" className="hover:text-white transition-colors">Guías de compra</Link>
+            </li>
+            <li>
               <Link href="/preguntas-frecuentes" className="hover:text-white transition-colors">Preguntas frecuentes</Link>
             </li>
             <li>

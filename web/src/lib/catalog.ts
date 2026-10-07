@@ -236,6 +236,21 @@ export async function getProductById(id: string) {
   });
 }
 
+// Para las guías de compra (/guias): resuelve los productos reales citados
+// por slug, con precio/stock/imagen en vivo — si un producto se agota o
+// cambia de precio, la guía lo refleja automáticamente.
+export async function getProductsForGuide(slugs: string[]) {
+  if (slugs.length === 0) return new Map();
+  const products = await prisma.product.findMany({
+    where: { slug: { in: slugs } },
+    include: {
+      category: true,
+      images: { orderBy: { sortOrder: "asc" }, take: 1 },
+    },
+  });
+  return new Map(products.map((p) => [p.slug, p]));
+}
+
 // La campaña vigente "ahora": activa y dentro de su rango de fechas. Si
 // hay más de una superpuesta, gana la más reciente (startsAt desc).
 export async function getActiveCampaign() {

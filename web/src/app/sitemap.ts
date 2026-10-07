@@ -1,4 +1,5 @@
 import { getAllCategoriesForSitemap, getAllProductsForSitemap } from "@/lib/catalog";
+import { getAllGuides } from "@/lib/guias";
 import { getSiteUrl } from "@/lib/utils";
 
 export default async function sitemap() {
@@ -25,6 +26,14 @@ export default async function sitemap() {
       url: `${siteUrl}/preguntas-frecuentes`,
       lastModified: new Date(),
     },
+    {
+      url: `${siteUrl}/guias`,
+      lastModified: new Date(),
+    },
+    ...getAllGuides().map((guide) => ({
+      url: `${siteUrl}/guias/${guide.slug}`,
+      lastModified: new Date(),
+    })),
     ...categories.map((category) => ({
       url: `${siteUrl}/categoria/${category.slug}`,
       lastModified: category.updatedAt,
