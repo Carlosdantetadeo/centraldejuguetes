@@ -191,7 +191,8 @@ export async function Footer() {
       </div>
 
       <div className="border-t border-steel-800 px-4 py-4 text-center text-xs text-steel-400">
-        © {new Date().getFullYear()} {settings.siteName}. Todos los derechos reservados.
+        © {new Date().getFullYear()} {settings.siteName}
+        {settings.legalEntity ? ` — ${settings.legalEntity}` : ""}. Todos los derechos reservados.
       </div>
     </footer>
   );
