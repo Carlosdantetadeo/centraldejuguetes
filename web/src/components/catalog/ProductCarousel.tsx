@@ -62,7 +62,7 @@ export function ProductCarousel({
               Ver todo →
             </Link>
           )}
-          <div className="hidden items-center gap-1.5 sm:flex">
+          <div className="flex items-center gap-1.5">
             <button
               onClick={() => scroll("left")}
               disabled={!canLeft}

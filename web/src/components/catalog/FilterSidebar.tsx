@@ -297,9 +297,9 @@ export function FilterSidebar({ counts, brands }: Props) {
             onClick={() => setMobileOpen(false)}
           />
           {/* Panel */}
-          <div className="absolute bottom-0 left-0 right-0 max-h-[82vh] flex flex-col rounded-t-2xl bg-white shadow-2xl">
+          <div className="absolute bottom-0 left-0 right-0 flex max-h-[82vh] flex-col overflow-hidden rounded-t-2xl bg-white shadow-2xl">
             {/* Handle + header */}
-            <div className="sticky top-0 z-10 rounded-t-2xl bg-white">
+            <div className="sticky top-0 z-10 shrink-0 rounded-t-2xl bg-white">
               <div className="mx-auto mt-3 h-1 w-10 rounded-full bg-steel-200" />
               <div className="flex items-center justify-between border-b border-steel-100 px-5 py-4">
                 <p className="font-semibold text-steel-900">
@@ -321,8 +321,9 @@ export function FilterSidebar({ counts, brands }: Props) {
                 </button>
               </div>
             </div>
-            {/* Contenido scrollable */}
-            <div className="overflow-y-auto p-5 pb-8">
+            {/* Contenido scrollable — min-h-0 es necesario para que el
+               overflow-y-auto funcione dentro de un flex column */}
+            <div className="min-h-0 flex-1 overflow-y-auto p-5 pb-8">
               {filters}
             </div>
           </div>

@@ -111,12 +111,12 @@ export async function ProductCard({
 
         <div className="px-4 pt-3 pb-1">
           {categoryName && (
-            <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-brand-500">
+            <p className="mb-1 truncate text-[10px] font-semibold uppercase tracking-wide text-brand-500">
               {categoryName}
             </p>
           )}
           {sku ? (
-            <p className="mb-1 font-mono text-[10px] font-medium text-steel-400">
+            <p className="mb-1 truncate font-mono text-[10px] font-medium text-steel-400">
               {sku}
             </p>
           ) : null}
@@ -124,7 +124,7 @@ export async function ProductCard({
             {displayName}
           </h3>
           {specs ? (
-            <p className="mt-1 font-mono text-xs text-steel-500">{specs}</p>
+            <p className="mt-1 truncate font-mono text-xs text-steel-500">{specs}</p>
           ) : null}
           {ageLabel ? (
             <p className="mt-1 text-xs font-medium text-brand-600">{ageLabel}</p>
@@ -153,9 +153,9 @@ export async function ProductCard({
           <Link
             href={productPath}
             aria-label={`Ver ficha de ${displayName}`}
-            className="flex shrink-0 items-center gap-1.5 rounded-xl bg-brand-600 px-3.5 py-2 text-xs font-semibold text-white transition-all hover:bg-brand-700 hover:shadow-md hover:shadow-brand-600/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-600 text-white transition-all hover:bg-brand-700 hover:shadow-md hover:shadow-brand-600/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 sm:w-auto sm:gap-1.5 sm:rounded-xl sm:px-3.5 sm:py-2 sm:text-xs sm:font-semibold"
           >
-            Ver ficha
+            <span className="hidden sm:inline">Ver ficha</span>
             <svg viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-current stroke-2" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
             </svg>
