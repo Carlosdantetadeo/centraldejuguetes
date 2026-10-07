@@ -47,10 +47,14 @@ export default async function HomePage({ searchParams }: PageProps) {
     getPublishedTestimonials(),
   ]);
 
+  // El banner genérico de SiteSettings ya trae su propio título/tagline
+  // diseñados en la imagen — no se le superpone texto. Las campañas sí usan
+  // una foto simple y necesitan el título/subtítulo dinámico encima.
   const hero = {
     imageUrl: campaign?.imageUrl ?? settings.heroImageUrl,
     title: campaign?.title ?? settings.siteName,
     subtitle: campaign?.subtitle ?? settings.siteDescription,
+    showOverlayText: Boolean(campaign) || !settings.heroImageUrl,
     ctaLabel: campaign?.ctaLabel ?? "Ver catálogo",
     ctaUrl: campaign?.ctaUrl ?? "#productos",
   };
@@ -150,6 +154,22 @@ export default async function HomePage({ searchParams }: PageProps) {
   const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
   const paginated = sorted.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
+  const heroCta = (
+    <a
+      href={hero.ctaUrl}
+      className={`inline-flex items-center gap-2 rounded-xl px-7 py-3.5 text-sm font-semibold shadow-lg transition-all hover:shadow-xl ${
+        hero.imageUrl
+          ? "bg-brand-600 text-white shadow-brand-600/30 hover:bg-brand-500"
+          : "bg-white text-brand-700 shadow-white/20 hover:bg-brand-50"
+      }`}
+    >
+      {hero.ctaLabel}
+      <svg viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-current stroke-2" aria-hidden="true">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+      </svg>
+    </a>
+  );
+
   return (
     <>
       <JsonLd data={buildStoreJsonLd(settings)} />
@@ -157,19 +177,31 @@ export default async function HomePage({ searchParams }: PageProps) {
       {/* Hero banner — campaña vigente si hay una, si no el genérico de SiteSettings */}
       <section className={`relative overflow-hidden ${hero.imageUrl ? "bg-steel-900" : "bg-brand-600"}`}>
         {hero.imageUrl ? (
-          <>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
+          hero.showOverlayText ? (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={hero.imageUrl}
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+              <div
+                className="absolute inset-0 bg-gradient-to-t from-steel-900 via-steel-900/85 to-steel-900/60"
+                aria-hidden="true"
+              />
+            </>
+          ) : (
+            // Banner ya diseñado con su propio texto: se muestra completo,
+            // sin recortar ni superponer título/subtítulo encima.
+            /* eslint-disable-next-line @next/next/no-img-element */
             <img
               src={hero.imageUrl}
               alt=""
               aria-hidden="true"
-              className="absolute inset-0 h-full w-full object-cover"
+              className="block w-full h-auto"
             />
-            <div
-              className="absolute inset-0 bg-gradient-to-t from-steel-900 via-steel-900/85 to-steel-900/60"
-              aria-hidden="true"
-            />
-          </>
+          )
         ) : (
           <div
             className="pointer-events-none absolute left-1/2 top-[-20%] h-[500px] w-[900px] max-w-full -translate-x-1/2 rounded-full bg-white/10 blur-[140px]"
@@ -177,37 +209,30 @@ export default async function HomePage({ searchParams }: PageProps) {
           />
         )}
 
-        <div className="relative mx-auto max-w-3xl px-4 py-16 text-center sm:py-24">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-xs font-medium text-white/90">
-            {campaign
-              ? `Oferta hasta el ${campaign.endsAt.toLocaleDateString("es-PE")}`
-              : "Mayorista de juguetes · Importación directa"}
-          </span>
+        {hero.showOverlayText ? (
+          <div className="relative mx-auto max-w-3xl px-4 py-16 text-center sm:py-24">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-xs font-medium text-white/90">
+              {campaign
+                ? `Oferta hasta el ${campaign.endsAt.toLocaleDateString("es-PE")}`
+                : "Mayorista de juguetes · Importación directa"}
+            </span>
 
-          <h1 className="mt-6 font-display text-4xl font-extrabold leading-[1.05] tracking-tight text-white sm:text-6xl">
-            {hero.title}
-          </h1>
+            <h1 className="mt-6 font-display text-4xl font-extrabold leading-[1.05] tracking-tight text-white sm:text-6xl">
+              {hero.title}
+            </h1>
 
-          <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-white/75 sm:text-lg">
-            {hero.subtitle}
-          </p>
+            <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-white/75 sm:text-lg">
+              {hero.subtitle}
+            </p>
 
-          <div className="mt-9 flex justify-center">
-            <a
-              href={hero.ctaUrl}
-              className={`inline-flex items-center gap-2 rounded-xl px-7 py-3.5 text-sm font-semibold shadow-lg transition-all hover:shadow-xl ${
-                hero.imageUrl
-                  ? "bg-brand-600 text-white shadow-brand-600/30 hover:bg-brand-500"
-                  : "bg-white text-brand-700 shadow-white/20 hover:bg-brand-50"
-              }`}
-            >
-              {hero.ctaLabel}
-              <svg viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-current stroke-2" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-              </svg>
-            </a>
+            <div className="mt-9 flex justify-center">{heroCta}</div>
           </div>
-        </div>
+        ) : (
+          <div className="absolute inset-x-0 bottom-4 flex flex-col items-center px-4 sm:bottom-8">
+            <h1 className="sr-only">{hero.title}</h1>
+            {heroCta}
+          </div>
+        )}
       </section>
 
       {/* Más vendidos — máximo 8, solo con stock real */}
