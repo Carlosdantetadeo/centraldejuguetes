@@ -249,10 +249,10 @@ export default async function HomePage({ searchParams }: PageProps) {
             <div className="mt-9 flex justify-center">{heroCta}</div>
           </div>
         ) : (
-          <div className="absolute inset-x-0 bottom-4 flex flex-col items-center px-4 sm:bottom-8">
-            <h1 className="sr-only">{hero.title}</h1>
-            {heroCta}
-          </div>
+          // Banner ya diseñado con su propio CTA/texto: no se le superpone
+          // ningún botón encima (tapaba el diseño). Solo un h1 oculto para
+          // SEO/accesibilidad.
+          <h1 className="sr-only">{hero.title}</h1>
         )}
       </section>
 
