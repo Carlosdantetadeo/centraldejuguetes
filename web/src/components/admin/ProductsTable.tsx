@@ -68,7 +68,7 @@ export function ProductsTable({
                 <th className="px-4 py-3 font-medium">Precio</th>
                 <th className="px-4 py-3 font-medium">Stock</th>
                 <th className="px-4 py-3 font-medium">Estado</th>
-                <th className="px-4 py-3 text-right font-medium">Acciones</th>
+                <th className="sticky right-0 bg-steel-50 px-4 py-3 text-right font-medium shadow-[-6px_0_8px_-4px_rgba(20,24,28,0.12)]">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-steel-100">
@@ -127,7 +127,7 @@ export function ProductsTable({
                       ) : null}
                     </div>
                   </td>
-                  <td className="px-4 py-4">
+                  <td className="sticky right-0 bg-white px-4 py-4 shadow-[-6px_0_8px_-4px_rgba(20,24,28,0.12)]">
                     <div className="flex items-center justify-end gap-2">
                       <Link
                         href={`/admin/productos/${product.id}/editar`}
