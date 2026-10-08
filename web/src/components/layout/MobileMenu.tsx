@@ -55,7 +55,7 @@ export function MobileMenu({ genders }: { genders: GenderNavItem[] }) {
         }`}
       >
         <div className="flex items-center justify-between border-b border-steel-100 px-4 py-3">
-          <span className="font-display text-xs font-semibold text-steel-500">
+          <span className="font-display text-xs font-semibold text-steel-600">
             Categorías
           </span>
           <button
@@ -78,7 +78,7 @@ export function MobileMenu({ genders }: { genders: GenderNavItem[] }) {
               >
                 {g.name}
                 {g.total === 0 && (
-                  <span className="rounded-full bg-steel-100 px-1.5 py-0.5 text-[9px] font-medium text-steel-400">
+                  <span className="rounded-full bg-steel-100 px-1.5 py-0.5 text-[9px] font-medium text-steel-600">
                     Pronto
                   </span>
                 )}
@@ -102,7 +102,7 @@ export function MobileMenu({ genders }: { genders: GenderNavItem[] }) {
                       />
                       {c.name}
                     </span>
-                    <span className="font-mono text-xs text-steel-400">{c.count}</span>
+                    <span className="font-mono text-xs text-steel-600">{c.count}</span>
                   </Link>
                 );
               })}

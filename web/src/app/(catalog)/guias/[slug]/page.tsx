@@ -49,11 +49,11 @@ export default async function GuiaPage({ params }: PageProps) {
         className="inline-flex items-center gap-1.5 rounded-lg border border-steel-200 bg-white px-2.5 py-1 text-xs font-medium text-steel-700 transition-colors hover:border-brand-300 hover:text-brand-700"
       >
         {label ?? name}
-        <span className="font-mono text-[11px] text-steel-400">
+        <span className="font-mono text-[11px] text-steel-600">
           {formatPrice(p.price, settings.currency, settings.locale)}
         </span>
         {!p.available && (
-          <span className="rounded-full bg-steel-100 px-1.5 text-[10px] text-steel-500">
+          <span className="rounded-full bg-steel-100 px-1.5 text-[10px] text-steel-600">
             Sin stock
           </span>
         )}
@@ -100,7 +100,7 @@ export default async function GuiaPage({ params }: PageProps) {
       {itemListUrls.length > 0 && <JsonLd data={buildItemListJsonLd(itemListUrls)} />}
 
       {/* Breadcrumb */}
-      <nav className="mb-6 flex items-center gap-2 text-sm text-steel-500">
+      <nav className="mb-6 flex items-center gap-2 text-sm text-steel-600">
         <Link href="/" className="hover:text-brand-700 transition-colors">Inicio</Link>
         <svg viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-current stroke-1.5" aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />

@@ -7,7 +7,7 @@ type WhatsAppProduct = {
   available: boolean;
 };
 
-// CTA secundario de la ficha de producto: "Preguntar por WhatsApp" (con
+// CTA secundario de la ficha de producto: "Escríbenos por WhatsApp" (con
 // el SKU, para que el vendedor no tenga que adivinar de qué producto se
 // trata). El flujo principal de cotización va por el carrito (CartFab).
 export function buildWhatsAppUrl(

@@ -151,7 +151,7 @@ export function GenderBand({ genders }: { genders: GenderCard[] }) {
                       <p className="font-display text-xs font-bold leading-tight text-steel-900 sm:text-sm">
                         {g.name}
                       </p>
-                      <p className="mt-0.5 text-[10px] font-medium text-steel-400">
+                      <p className="mt-0.5 text-[10px] font-medium text-steel-600">
                         {g.total > 0 ? `${g.total} productos` : "Próximamente"}
                       </p>
                     </div>

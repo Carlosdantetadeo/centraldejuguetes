@@ -1,12 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { useCart } from "@/components/cart/CartProvider";
 import { formatPrice, getSiteUrl } from "@/lib/utils";
 import { getStoredUtm } from "@/lib/utm";
 import { trackViewCart, trackWhatsappOrder } from "@/lib/analytics";
 
 export function CartFab() {
+  // La ficha de producto ya tiene su propio CTA + ProductStickyBar (G-06):
+  // mostrar también el FAB aquí los haría solaparse en móvil.
+  const pathname = usePathname();
+  const onProductPage = pathname?.startsWith("/producto/") ?? false;
+
   const {
     items,
     config,
@@ -126,20 +132,23 @@ export function CartFab() {
 
   return (
     <>
-      {/* Botón flotante */}
-      <button
-        onClick={openCart}
-        aria-label={`Ver cotización (${items.length} productos)`}
-        className="fixed bottom-5 right-5 z-40 flex items-center gap-2 rounded-full bg-brand-600 px-5 py-3.5 text-sm font-semibold text-white shadow-xl shadow-brand-600/30 transition-all hover:bg-brand-700 hover:shadow-2xl"
-      >
-        <svg viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current stroke-2" aria-hidden="true">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121 0 2.1-.744 2.4-1.822l1.03-3.706A1.125 1.125 0 0 0 20.03 7.5H5.106M7.5 14.25 5.106 7.5M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-        </svg>
-        Mi cotización
-        <span className="flex h-6 min-w-[1.5rem] items-center justify-center rounded-full bg-white px-1.5 text-xs font-bold text-brand-700">
-          {items.length}
-        </span>
-      </button>
+      {/* Botón flotante — oculto en la ficha de producto (G-06): ahí ya
+          cumple ese rol ProductStickyBar, sin solaparse en móvil. */}
+      {!onProductPage && (
+        <button
+          onClick={openCart}
+          aria-label={`Ver cotización (${items.length} productos)`}
+          className="fixed bottom-5 right-5 z-40 flex items-center gap-2 rounded-full bg-brand-600 px-5 py-3.5 text-sm font-semibold text-white shadow-xl shadow-brand-600/30 transition-all hover:bg-brand-700 hover:shadow-2xl"
+        >
+          <svg viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current stroke-2" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121 0 2.1-.744 2.4-1.822l1.03-3.706A1.125 1.125 0 0 0 20.03 7.5H5.106M7.5 14.25 5.106 7.5M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+          </svg>
+          Mi cotización
+          <span className="flex h-6 min-w-[1.5rem] items-center justify-center rounded-full bg-white px-1.5 text-xs font-bold text-brand-700">
+            {items.length}
+          </span>
+        </button>
+      )}
 
       {/* Backdrop */}
       <div
@@ -162,7 +171,7 @@ export function CartFab() {
         <div className="flex items-center justify-between border-b border-steel-100 px-4 py-3">
           <span className="font-display text-sm font-bold text-steel-900">
             Mi cotización
-            <span className="ml-1.5 font-normal text-steel-400">
+            <span className="ml-1.5 font-normal text-steel-600">
               ({items.length} {items.length === 1 ? "producto" : "productos"})
             </span>
           </span>
@@ -201,7 +210,7 @@ export function CartFab() {
                     {formatPrice(it.price, config.currency, config.locale)}
                   </p>
                   {it.sizes.length > 0 && (
-                    <p className="mt-1 text-xs text-steel-500">
+                    <p className="mt-1 text-xs text-steel-600">
                       Cantidad:{" "}
                       <span className="font-medium text-steel-700">
                         {it.sizes.map((s) => `${s.size} ×${s.qty}`).join(", ")}
@@ -224,7 +233,7 @@ export function CartFab() {
 
           <button
             onClick={clear}
-            className="mt-3 text-xs font-medium text-steel-500 underline-offset-2 hover:text-red-600 hover:underline"
+            className="mt-3 text-xs font-medium text-steel-600 underline-offset-2 hover:text-red-600 hover:underline"
           >
             Vaciar cotización
           </button>
@@ -271,7 +280,7 @@ export function CartFab() {
             <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current" aria-hidden>
               <path d="M17.47 14.38c-.29-.15-1.71-.84-1.97-.94-.26-.1-.46-.15-.65.15-.19.29-.75.94-.92 1.13-.17.19-.34.22-.63.07-.29-.15-1.22-.45-2.33-1.43-.86-.77-1.44-1.72-1.61-2.01-.17-.29-.02-.45.13-.59.13-.13.29-.34.44-.51.15-.17.19-.29.29-.48.1-.19.05-.36-.02-.51-.07-.15-.65-1.57-.89-2.15-.24-.57-.48-.49-.65-.5-.17-.01-.36-.01-.55-.01-.19 0-.51.07-.77.36-.26.29-1.01.99-1.01 2.41 0 1.42 1.03 2.79 1.18 2.98.15.19 2.03 3.1 4.92 4.35.69.3 1.22.47 1.64.6.69.22 1.31.19 1.81.12.55-.08 1.71-.7 1.95-1.37.24-.67.24-1.25.17-1.37-.07-.12-.26-.19-.55-.34zM12.04 2.5A9.5 9.5 0 0 0 2.55 12c0 1.67.44 3.31 1.27 4.75L2.5 21.5l4.87-1.28A9.46 9.46 0 0 0 12.04 21.5 9.5 9.5 0 0 0 21.5 12 9.5 9.5 0 0 0 12.04 2.5z" />
             </svg>
-            {sending ? "Enviando…" : "Enviar pedido por WhatsApp"}
+            {sending ? "Enviando…" : "Enviar cotización por WhatsApp"}
           </button>
         </div>
       </div>

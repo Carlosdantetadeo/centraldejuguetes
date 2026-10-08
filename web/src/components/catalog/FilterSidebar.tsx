@@ -90,7 +90,7 @@ export function FilterSidebar({ counts, brands }: Props) {
     <div className="space-y-6">
       {/* Disponibilidad — "Con stock" es el default */}
       <section>
-        <h3 className="mb-3 text-[11px] font-semibold text-steel-500">
+        <h3 className="mb-3 text-[11px] font-semibold text-steel-600">
           Disponibilidad
         </h3>
         <div className="space-y-2.5">
@@ -115,7 +115,7 @@ export function FilterSidebar({ counts, brands }: Props) {
       {/* Edad */}
       {Object.values(counts.ages).some((c) => c > 0) && (
         <section>
-          <h3 className="mb-3 text-[11px] font-semibold text-steel-500">
+          <h3 className="mb-3 text-[11px] font-semibold text-steel-600">
             Edad
           </h3>
           <div className="space-y-2.5">
@@ -143,7 +143,7 @@ export function FilterSidebar({ counts, brands }: Props) {
                   />
                   <span className="text-sm text-steel-700">
                     {range.label}
-                    <span className="ml-1 text-steel-400">({count})</span>
+                    <span className="ml-1 text-steel-600">({count})</span>
                   </span>
                 </label>
               );
@@ -155,7 +155,7 @@ export function FilterSidebar({ counts, brands }: Props) {
       {/* Marca */}
       {brands && brands.length > 0 && (
         <section>
-          <h3 className="mb-3 text-[11px] font-semibold text-steel-500">
+          <h3 className="mb-3 text-[11px] font-semibold text-steel-600">
             Marca
           </h3>
           <div className="space-y-2.5">
@@ -181,7 +181,7 @@ export function FilterSidebar({ counts, brands }: Props) {
                   />
                   <span className="text-sm text-steel-700">
                     {b.name}
-                    <span className="ml-1 text-steel-400">({b.count})</span>
+                    <span className="ml-1 text-steel-600">({b.count})</span>
                   </span>
                 </label>
               ))}
@@ -192,7 +192,7 @@ export function FilterSidebar({ counts, brands }: Props) {
 
       {/* Precio */}
       <section>
-        <h3 className="mb-3 text-[11px] font-semibold text-steel-500">
+        <h3 className="mb-3 text-[11px] font-semibold text-steel-600">
           Precio
         </h3>
         <div className="space-y-2.5">
@@ -220,7 +220,7 @@ export function FilterSidebar({ counts, brands }: Props) {
                 />
                 <span className="text-sm text-steel-700">
                   {range.label}
-                  <span className="ml-1 text-steel-400">({count})</span>
+                  <span className="ml-1 text-steel-600">({count})</span>
                 </span>
               </label>
             );
@@ -231,7 +231,7 @@ export function FilterSidebar({ counts, brands }: Props) {
       {/* Con foto */}
       {counts.conFoto > 0 && counts.conFoto < counts.total && (
         <section>
-          <h3 className="mb-3 text-[11px] font-semibold text-steel-500">
+          <h3 className="mb-3 text-[11px] font-semibold text-steel-600">
             Imágenes
           </h3>
           <label className="flex cursor-pointer items-center gap-2.5">
@@ -243,7 +243,7 @@ export function FilterSidebar({ counts, brands }: Props) {
             />
             <span className="text-sm text-steel-700">
               Solo con foto
-              <span className="ml-1 text-steel-400">({counts.conFoto})</span>
+              <span className="ml-1 text-steel-600">({counts.conFoto})</span>
             </span>
           </label>
         </section>
@@ -305,7 +305,7 @@ export function FilterSidebar({ counts, brands }: Props) {
                 <p className="font-semibold text-steel-900">
                   Filtros
                   {activeCount > 0 && (
-                    <span className="ml-2 text-sm font-normal text-steel-400">
+                    <span className="ml-2 text-sm font-normal text-steel-600">
                       {activeCount} activo{activeCount !== 1 ? "s" : ""}
                     </span>
                   )}
@@ -333,7 +333,7 @@ export function FilterSidebar({ counts, brands }: Props) {
       {/* Desktop sidebar */}
       <aside className="hidden w-56 shrink-0 md:block">
         <div className="sticky top-24 rounded-xl border border-steel-200 bg-white p-5 shadow-sm">
-          <p className="mb-5 text-[11px] font-semibold text-steel-500">
+          <p className="mb-5 text-[11px] font-semibold text-steel-600">
             Filtrar
           </p>
           {filters}

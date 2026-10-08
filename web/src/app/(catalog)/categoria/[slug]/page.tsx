@@ -149,7 +149,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
       )}
 
       {/* Breadcrumb */}
-      <nav className="mb-4 flex items-center gap-2 text-sm text-steel-500">
+      <nav className="mb-4 flex items-center gap-2 text-sm text-steel-600">
         <Link href="/" className="hover:text-brand-700 transition-colors">Inicio</Link>
         <svg viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-current stroke-1.5" aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
@@ -166,9 +166,9 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
           {category.name}
         </h1>
         {category.description && (
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-steel-500">{category.description}</p>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-steel-600">{category.description}</p>
         )}
-        <p className="mt-3 font-mono text-xs text-steel-400">
+        <p className="mt-3 font-mono text-xs text-steel-600">
           {products.length} {products.length === 1 ? "producto" : "productos"} en esta categoría
         </p>
       </div>
@@ -191,7 +191,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
           <div className="min-w-0 flex-1">
             {/* Barra de resultados */}
             <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-steel-100 pb-3">
-              <p className="font-mono text-xs text-steel-500">
+              <p className="font-mono text-xs text-steel-600">
                 {sorted.length}{" "}
                 {sorted.length === 1 ? "producto" : "productos"}
                 {hasActiveFilters ? " encontrados" : ""}
@@ -201,7 +201,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
 
             {sorted.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-steel-200 bg-white p-12 text-center">
-                <p className="text-steel-500">Ningún producto coincide con los filtros aplicados.</p>
+                <p className="text-steel-600">Ningún producto coincide con los filtros aplicados.</p>
               </div>
             ) : (
               <>

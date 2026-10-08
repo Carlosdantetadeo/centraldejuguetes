@@ -38,7 +38,7 @@ export function Pagination({
       >
         Anterior
       </a>
-      <span className="font-mono text-sm text-steel-500">
+      <span className="font-mono text-sm text-steel-600">
         Página {currentPage} de {totalPages}
       </span>
       <a

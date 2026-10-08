@@ -23,7 +23,7 @@ export default async function SearchPage({ searchParams }: PageProps) {
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
       {/* Breadcrumb */}
-      <nav className="mb-4 flex items-center gap-2 text-sm text-steel-500">
+      <nav className="mb-4 flex items-center gap-2 text-sm text-steel-600">
         <Link href="/" className="hover:text-brand-700 transition-colors">Inicio</Link>
         <svg viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-current stroke-1.5" aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
@@ -36,11 +36,11 @@ export default async function SearchPage({ searchParams }: PageProps) {
       </h1>
 
       {query ? (
-        <p className="mt-2 text-sm text-steel-500">
+        <p className="mt-2 text-sm text-steel-600">
           {results.length} {results.length === 1 ? "resultado" : "resultados"} encontrados
         </p>
       ) : (
-        <p className="mt-2 text-sm text-steel-500">
+        <p className="mt-2 text-sm text-steel-600">
           Escribe un nombre o medida en el buscador superior.
         </p>
       )}
@@ -53,7 +53,7 @@ export default async function SearchPage({ searchParams }: PageProps) {
             </svg>
           </div>
           <p className="text-lg font-semibold text-steel-700">No encontramos productos</p>
-          <p className="mt-1 text-sm text-steel-500">Intenta con otro término o medida.</p>
+          <p className="mt-1 text-sm text-steel-600">Intenta con otro término o medida.</p>
         </div>
       ) : null}
 

@@ -10,15 +10,16 @@
   --color-foreground: var(--foreground);
 
   /* Marca: rampa inyectada por instancia desde SiteSettings.brandColor
-     (ver src/lib/theme.ts, layout.tsx). El fallback es gris neutro — nunca
-     el color de una marca concreta. */
-  --color-brand-50: var(--brand-50, #f7f8f8);
-  --color-brand-100: var(--brand-100, #eceeef);
-  --color-brand-200: var(--brand-200, #d8dcde);
-  --color-brand-300: var(--brand-300, #b2b8bd);
-  --color-brand-500: var(--brand-500, #64717a);
-  --color-brand-600: var(--brand-600, #58636b);
-  --color-brand-700: var(--brand-700, #464f55);
+     (ver src/lib/theme.ts, layout.tsx). El fallback es una rampa cálida y
+     viva (tono "tangerine") neutra-amable propia de juguetería — nunca gris
+     industrial ni el color de una marca concreta. */
+  --color-brand-50: var(--brand-50, #fff3ea);
+  --color-brand-100: var(--brand-100, #ffe1cc);
+  --color-brand-200: var(--brand-200, #ffc299);
+  --color-brand-300: var(--brand-300, #ff9f5e);
+  --color-brand-500: var(--brand-500, #f2672d);
+  --color-brand-600: var(--brand-600, #d1531f);
+  --color-brand-700: var(--brand-700, #a13f17);
 
   /* Neutros gris acero (industrial). */
   --color-steel-50: #f6f7f8;

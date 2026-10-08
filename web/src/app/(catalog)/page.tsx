@@ -210,13 +210,15 @@ export default async function HomePage({ searchParams }: PageProps) {
             </>
           ) : (
             // Banner ya diseñado con su propio texto: se muestra completo,
-            // sin recortar ni superponer título/subtítulo encima.
+            // sin recortar ni superponer título/subtítulo encima. Altura
+            // topeada (H-02): en móvil no debe ocupar toda la pantalla y
+            // tapar el catálogo que sigue debajo del pliegue.
             /* eslint-disable-next-line @next/next/no-img-element */
             <img
               src={hero.imageUrl}
               alt=""
               aria-hidden="true"
-              className="block w-full h-auto"
+              className="mx-auto block h-auto max-h-[60vh] w-auto max-w-full"
             />
           )
         ) : (
@@ -252,12 +254,14 @@ export default async function HomePage({ searchParams }: PageProps) {
         )}
       </section>
 
-      {/* Más vendidos — máximo 8, solo con stock real */}
+      {/* Destacados — selección curada a mano desde el admin (featured),
+          máximo 8, solo con stock real. No son "más vendidos": no hay datos
+          de ventas reales detrás (H-01). */}
       {bestSellers.length > 0 && (
         <section className="border-b border-steel-100 bg-white py-10">
           <div className="mx-auto max-w-6xl px-4">
             <h2 className="mb-5 font-display text-lg font-extrabold uppercase tracking-wide text-steel-900">
-              Más vendidos
+              Destacados
             </h2>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
               {bestSellers.map((product) => (
@@ -296,7 +300,7 @@ export default async function HomePage({ searchParams }: PageProps) {
               </svg>
             </div>
             <p className="text-lg font-semibold text-steel-700">Aún no hay productos publicados</p>
-            <p className="mt-1 text-sm text-steel-500">El administrador puede agregarlos desde el panel.</p>
+            <p className="mt-1 text-sm text-steel-600">El administrador puede agregarlos desde el panel.</p>
           </div>
         ) : (
           <>
@@ -311,7 +315,7 @@ export default async function HomePage({ searchParams }: PageProps) {
                     : "Resultados"}
                 </h2>
                 <div className="flex items-center gap-3">
-                  <span className="font-mono text-xs text-steel-500">
+                  <span className="font-mono text-xs text-steel-600">
                     {sorted.length}{" "}
                     {sorted.length === 1 ? "producto" : "productos"}
                     {" encontrados"}
@@ -322,7 +326,7 @@ export default async function HomePage({ searchParams }: PageProps) {
 
               {sorted.length === 0 ? (
                 <div className="rounded-2xl border border-dashed border-steel-200 bg-white p-12 text-center">
-                  <p className="text-steel-500">Ningún producto coincide con los filtros aplicados.</p>
+                  <p className="text-steel-600">Ningún producto coincide con los filtros aplicados.</p>
                 </div>
               ) : (
                 <>
@@ -431,7 +435,7 @@ export default async function HomePage({ searchParams }: PageProps) {
                         /* eslint-disable-next-line @next/next/no-img-element */
                         <img src={t.imageUrl} alt={t.authorName} className="h-full w-full object-cover" />
                       ) : (
-                        <span className="text-xs font-bold text-steel-400">
+                        <span className="text-xs font-bold text-steel-600">
                           {t.authorName.slice(0, 2).toUpperCase()}
                         </span>
                       )}

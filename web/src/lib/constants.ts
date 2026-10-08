@@ -26,8 +26,11 @@ export const AGE_RANGES = [
   { value: "13-99", label: "13+ años", min: 13, max: 99 },
 ] as const;
 
+// value "vendidos" se mantiene por compatibilidad de URL (?orden=vendidos);
+// el label dice "consultados" porque en realidad ordena por vistas (H-01),
+// no hay datos de ventas reales detrás.
 export const SORT_OPTIONS = [
-  { value: "vendidos", label: "Más vendidos" },
+  { value: "vendidos", label: "Más consultados" },
   { value: "precio-asc", label: "Menor precio" },
   { value: "precio-desc", label: "Mayor precio" },
   { value: "nuevos", label: "Novedades" },

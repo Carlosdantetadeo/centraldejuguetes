@@ -51,7 +51,7 @@ export default async function GuiasIndexPage() {
             <h2 className="mt-1.5 font-display text-lg font-bold leading-snug text-steel-900 transition-colors group-hover:text-brand-700">
               {guide.h1}
             </h2>
-            <p className="mt-2 line-clamp-2 text-sm leading-6 text-steel-500">
+            <p className="mt-2 line-clamp-2 text-sm leading-6 text-steel-600">
               {guide.meta_descripcion}
             </p>
           </Link>

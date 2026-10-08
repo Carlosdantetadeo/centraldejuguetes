@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ProductImage } from "@/components/catalog/ProductImage";
+import { QuickAddButton } from "@/components/catalog/QuickAddButton";
 import { getSiteSettings } from "@/lib/settings";
 import { formatPrice, formatProductName } from "@/lib/utils";
 
@@ -27,6 +28,7 @@ type ProductCardProps = {
 };
 
 export async function ProductCard({
+  id,
   name,
   sku,
   slug,
@@ -110,6 +112,19 @@ export async function ProductCard({
             <span className="select-none text-5xl opacity-25">📦</span>
           </div>
         )}
+        {/* Acción rápida opcional (H-04): agrega sin salir de la grilla */}
+        {available && (
+          <QuickAddButton
+            id={id}
+            categorySlug={categorySlug}
+            productSlug={slug}
+            name={displayName}
+            sku={sku}
+            price={price}
+            currency={settings.currency}
+            image={image?.pathMedium ?? null}
+          />
+        )}
       </div>
 
       <div className="px-4 pt-3 pb-1">
@@ -118,19 +133,23 @@ export async function ProductCard({
             {categoryName}
           </p>
         )}
-        {sku ? (
-          <p className="mb-1 truncate font-mono text-[10px] font-medium text-steel-400">
-            {sku}
-          </p>
-        ) : null}
+        {/* Nombre primero: en juguetes se compra por edad/marca, el SKU es
+           dato secundario de respaldo (G-04) */}
         <h3 className="line-clamp-2 min-h-[35px] text-sm font-semibold leading-snug text-steel-900 transition-colors group-hover:text-brand-700">
           {displayName}
         </h3>
-        {specs ? (
-          <p className="mt-1 truncate font-mono text-xs text-steel-500">{specs}</p>
-        ) : null}
         {ageLabel ? (
-          <p className="mt-1 text-xs font-medium text-brand-600">{ageLabel}</p>
+          <span className="mt-1.5 inline-flex w-fit items-center gap-1 rounded-full border border-brand-200 bg-brand-50 px-2.5 py-1 text-[11px] font-bold text-brand-700">
+            {ageLabel}
+          </span>
+        ) : null}
+        {specs ? (
+          <p className="mt-1.5 truncate font-mono text-xs text-steel-600">{specs}</p>
+        ) : null}
+        {sku ? (
+          <p className="mt-1 truncate font-mono text-[10px] font-medium text-steel-600">
+            Cód. {sku}
+          </p>
         ) : null}
       </div>
 
@@ -138,7 +157,7 @@ export async function ProductCard({
       <div className="mt-auto flex items-end justify-between gap-2 border-t border-steel-100 px-4 py-3">
         <div className="min-w-0">
           {hasDiscount && (
-            <p className="font-mono text-xs font-medium leading-none text-steel-400 line-through">
+            <p className="font-mono text-xs font-medium leading-none text-steel-600 line-through">
               {formatPrice(compareAtPrice!, settings.currency, settings.locale)}
             </p>
           )}
@@ -147,7 +166,7 @@ export async function ProductCard({
           >
             {formatPrice(price, settings.currency, settings.locale)}
           </p>
-          <p className="mt-1 text-[10px] leading-tight text-steel-400">
+          <p className="mt-1 text-[10px] leading-tight text-steel-600">
             {settings.priceLabel}
           </p>
         </div>

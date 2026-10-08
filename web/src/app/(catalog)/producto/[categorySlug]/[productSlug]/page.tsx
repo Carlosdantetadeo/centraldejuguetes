@@ -17,17 +17,19 @@ import { buildBreadcrumbJsonLd, buildProductJsonLd } from "@/lib/jsonld";
 export const revalidate = 60;
 
 // Extrae las tallas de `measure` (ej. "Tallas 38, 39, 40" → ["38","39","40"]).
-// Solo lo trata como tallas si viene con la etiqueta "Talla(s)" o hay 2+ valores
-// separados por coma; de lo contrario `measure` es una medida normal.
+// Modo heredado de instancias de ropa/calzado (F-07): solo se activa con la
+// etiqueta explícita "Talla(s)" — un `measure` de juguete con varios valores
+// separados por coma (ej. medidas largo/ancho/alto) NO debe activar por
+// error el selector de tallas. En productos de juguete, measure nunca trae
+// esa etiqueta, así que la ficha siempre muestra el contador simple.
 function parseSizes(measure?: string | null): string[] {
   if (!measure) return [];
-  const hasLabel = /tallas?/i.test(measure);
-  const parts = measure
+  if (!/tallas?/i.test(measure)) return [];
+  return measure
     .replace(/tallas?/i, "")
     .split(/[,/]/)
     .map((s) => s.trim())
     .filter(Boolean);
-  return hasLabel || parts.length >= 2 ? parts : [];
 }
 
 type PageProps = {
@@ -86,18 +88,20 @@ export default async function ProductPage({ params }: PageProps) {
       )
     : null;
 
-  // Detalles técnicos: si `measure` son tallas, se muestran arriba como
-  // selector y no se repiten aquí; solo quedan calibre/material/edad/pilas.
+  // Detalles técnicos (F-04): lo relevante en juguetería primero — edad y
+  // pilas — y las medidas industriales (calibre/medida) al final. Si
+  // `measure` son tallas, ya se muestran arriba como selector y no se
+  // repiten aquí.
   const specs = [
-    !sizes.length ? { label: "Medida", value: product.measure } : null,
-    { label: "Calibre", value: product.gauge },
-    { label: "Material", value: product.material },
     product.ageMin != null && product.ageMax != null
       ? { label: "Edad recomendada", value: `${product.ageMin}–${product.ageMax} años` }
       : null,
     product.batteriesIncluded != null
       ? { label: "Incluye pilas", value: product.batteriesIncluded ? "Sí" : "No" }
       : null,
+    { label: "Material", value: product.material },
+    !sizes.length ? { label: "Medida", value: product.measure } : null,
+    { label: "Calibre", value: product.gauge },
   ].filter((s): s is { label: string; value: string } => Boolean(s?.value));
 
   return (
@@ -130,7 +134,7 @@ export default async function ProductPage({ params }: PageProps) {
       />
 
       {/* Breadcrumb */}
-      <nav className="mb-6 flex items-center gap-2 text-sm text-steel-500">
+      <nav className="mb-6 flex items-center gap-2 text-sm text-steel-600">
         <Link href="/" className="hover:text-brand-700 transition-colors">Inicio</Link>
         <svg viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-current stroke-1.5" aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
@@ -152,11 +156,19 @@ export default async function ProductPage({ params }: PageProps) {
 
         {/* Product info */}
         <div className="flex flex-col">
-          {/* Eyebrow: categoría + estado */}
-          <div className="flex items-center gap-2">
+          {/* Eyebrow: categoría + edad recomendada + estado (F-03: la edad
+             es el filtro #1 de un padre, visible sin abrir el acordeón) */}
+          <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs font-semibold text-brand-600">
               {product.category.name}
             </span>
+            {product.ageMin != null && product.ageMax != null && (
+              <span className="inline-flex items-center gap-1 rounded-full border border-brand-200 bg-brand-50 px-2.5 py-0.5 text-[11px] font-bold text-brand-700">
+                {product.ageMin === product.ageMax
+                  ? `${product.ageMin} años`
+                  : `${product.ageMin}–${product.ageMax} años`}
+              </span>
+            )}
             {!product.available && (
               <span className="inline-flex items-center gap-1.5 rounded-full border border-steel-200 bg-steel-100 px-2.5 py-0.5 text-[11px] font-semibold text-steel-600">
                 <span className="h-1.5 w-1.5 rounded-full bg-steel-400" />
@@ -177,7 +189,7 @@ export default async function ProductPage({ params }: PageProps) {
           {/* Precio unitario, con descuento si corresponde */}
           <div className="mt-4 rounded-xl border border-steel-200 bg-steel-50 p-4">
             <div className="flex items-center justify-between gap-2">
-              <p className="text-xs font-medium text-steel-500">Precio unitario</p>
+              <p className="text-xs font-medium text-steel-600">Precio unitario</p>
               {hasDiscount && (
                 <span className="rounded-full bg-rose-600 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-white">
                   -{discountPct}%
@@ -191,12 +203,12 @@ export default async function ProductPage({ params }: PageProps) {
                 {formatPrice(product.price, settings.currency, settings.locale)}
               </p>
               {hasDiscount && (
-                <p className="font-mono text-base font-medium leading-none text-steel-400 line-through">
+                <p className="font-mono text-base font-medium leading-none text-steel-600 line-through">
                   {formatPrice(product.compareAtPrice!, settings.currency, settings.locale)}
                 </p>
               )}
             </div>
-            <p className="mt-1 text-xs text-steel-500">{settings.priceLabel}</p>
+            <p className="mt-1 text-xs text-steel-600">{settings.priceLabel}</p>
           </div>
 
           {/* Selector de tallas + CTA de WhatsApp */}
@@ -212,7 +224,7 @@ export default async function ProductPage({ params }: PageProps) {
               currency={settings.currency}
               image={product.images[0]?.pathThumb ?? null}
             />
-            <p className="mt-3 flex items-start gap-2 text-xs leading-5 text-steel-500">
+            <p className="mt-3 flex items-start gap-2 text-xs leading-5 text-steel-600">
               <span className="mt-1 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-whatsapp" aria-hidden />
               {settings.priceNote}
             </p>
@@ -229,13 +241,12 @@ export default async function ProductPage({ params }: PageProps) {
 
           <ProductStickyBar
             targetId="comprar-panel"
-            productId={product.id}
             name={displayName}
             price={product.price}
             compareAtPrice={product.compareAtPrice}
             currency={settings.currency}
             locale={settings.locale}
-            whatsappHref={askWhatsAppUrl}
+            hasWhatsapp={Boolean(settings.whatsappNumber)}
           />
 
           {/* Trust strip */}
@@ -271,7 +282,7 @@ export default async function ProductPage({ params }: PageProps) {
 
           {/* Acordeón: Detalles técnicos */}
           {specs.length > 0 && (
-            <details className="group mt-3 rounded-2xl border border-steel-200 bg-white" open>
+            <details className="group mt-3 rounded-2xl border border-steel-200 bg-white">
               <summary className="flex cursor-pointer select-none items-center justify-between px-5 py-4 text-sm font-semibold text-steel-900 marker:content-none">
                 Detalles técnicos
                 <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 fill-none stroke-current stroke-2 transition-transform group-open:rotate-180" aria-hidden>
@@ -281,7 +292,7 @@ export default async function ProductPage({ params }: PageProps) {
               <dl className="divide-y divide-steel-100 border-t border-steel-100 px-5">
                 {specs.map((spec) => (
                   <div key={spec.label} className="flex items-center justify-between gap-4 py-3">
-                    <dt className="text-sm text-steel-500">{spec.label}</dt>
+                    <dt className="text-sm text-steel-600">{spec.label}</dt>
                     <dd className="font-mono text-sm font-semibold text-steel-900">{spec.value}</dd>
                   </div>
                 ))}
@@ -291,7 +302,7 @@ export default async function ProductPage({ params }: PageProps) {
 
           {/* Video corto, si existe */}
           {product.videoUrl && (
-            <details className="group mt-3 rounded-2xl border border-steel-200 bg-white" open>
+            <details className="group mt-3 rounded-2xl border border-steel-200 bg-white">
               <summary className="flex cursor-pointer select-none items-center justify-between px-5 py-4 text-sm font-semibold text-steel-900 marker:content-none">
                 Video del producto
                 <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 fill-none stroke-current stroke-2 transition-transform group-open:rotate-180" aria-hidden>
@@ -308,7 +319,7 @@ export default async function ProductPage({ params }: PageProps) {
 
           {/* Contenido de la caja */}
           {product.boxContents && (
-            <details className="group mt-3 rounded-2xl border border-steel-200 bg-white" open>
+            <details className="group mt-3 rounded-2xl border border-steel-200 bg-white">
               <summary className="flex cursor-pointer select-none items-center justify-between px-5 py-4 text-sm font-semibold text-steel-900 marker:content-none">
                 Contenido de la caja
                 <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 fill-none stroke-current stroke-2 transition-transform group-open:rotate-180" aria-hidden>
@@ -336,7 +347,7 @@ export default async function ProductPage({ params }: PageProps) {
             </details>
           )}
 
-          <p className="mt-6 text-xs leading-5 text-steel-500">
+          <p className="mt-6 text-xs leading-5 text-steel-600">
             Al contactar por WhatsApp, {settings.siteName} tratará tus datos personales conforme a la
             política de privacidad publicada en este sitio.
           </p>

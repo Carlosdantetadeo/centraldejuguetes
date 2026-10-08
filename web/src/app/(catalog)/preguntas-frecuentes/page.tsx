@@ -34,7 +34,7 @@ export default async function FaqPage() {
       </h1>
 
       {items.length === 0 ? (
-        <p className="mt-6 text-steel-500">
+        <p className="mt-6 text-steel-600">
           Aún no hay preguntas publicadas. El administrador puede agregarlas desde el panel.
         </p>
       ) : (

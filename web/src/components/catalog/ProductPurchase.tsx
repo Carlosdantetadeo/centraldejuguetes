@@ -89,7 +89,7 @@ export function ProductPurchase({
               <button
                 type="button"
                 onClick={() => setSizeQty({})}
-                className="text-xs font-medium text-steel-500 underline-offset-2 hover:text-brand-700 hover:underline"
+                className="text-xs font-medium text-steel-600 underline-offset-2 hover:text-brand-700 hover:underline"
               >
                 Limpiar
               </button>
@@ -114,7 +114,7 @@ export function ProductPurchase({
                         type="button"
                         onClick={() => setSizeAmount(size, value - 1)}
                         aria-label={`Quitar una unidad de la talla ${size}`}
-                        className="flex h-7 w-7 items-center justify-center rounded-lg border border-steel-200 bg-white text-steel-600 hover:border-brand-300 hover:text-brand-700"
+                        className="flex h-11 w-11 items-center justify-center rounded-lg border border-steel-200 bg-white text-steel-600 hover:border-brand-300 hover:text-brand-700"
                       >
                         <svg viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-current stroke-2" aria-hidden>
                           <path strokeLinecap="round" d="M5 12h14" />
@@ -127,7 +127,7 @@ export function ProductPurchase({
                         type="button"
                         onClick={() => setSizeAmount(size, value + 1)}
                         aria-label={`Agregar una unidad de la talla ${size}`}
-                        className="flex h-7 w-7 items-center justify-center rounded-lg border border-brand-600 bg-brand-600 text-white hover:bg-brand-700"
+                        className="flex h-11 w-11 items-center justify-center rounded-lg border border-brand-600 bg-brand-600 text-white hover:bg-brand-700"
                       >
                         <svg viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-current stroke-2" aria-hidden>
                           <path strokeLinecap="round" d="M12 5v14m7-7H5" />
@@ -138,7 +138,7 @@ export function ProductPurchase({
                     <button
                       type="button"
                       onClick={() => setSizeAmount(size, 1)}
-                      className="flex h-7 items-center gap-1 rounded-lg border border-steel-200 bg-white px-2 text-xs font-semibold text-brand-700 hover:border-brand-300"
+                      className="flex h-11 items-center gap-1 rounded-lg border border-steel-200 bg-white px-2.5 text-xs font-semibold text-brand-700 hover:border-brand-300"
                     >
                       <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 fill-none stroke-current stroke-2" aria-hidden>
                         <path strokeLinecap="round" d="M12 5v14m7-7H5" />
@@ -151,7 +151,7 @@ export function ProductPurchase({
             })}
           </div>
 
-          <p className="mt-2 text-xs text-steel-500" aria-live="polite">
+          <p className="mt-2 text-xs text-steel-600" aria-live="polite">
             {chosen.length > 0
               ? `Seleccionado: ${chosen.map((s) => `${s.size} ×${s.qty}`).join(", ")} · ${totalPares} ${totalPares === 1 ? "par" : "pares"}`
               : "Elige la cantidad de cada talla que quieras cotizar."}
@@ -170,7 +170,7 @@ export function ProductPurchase({
               type="button"
               onClick={() => setSimpleQty((q) => Math.max(1, q - 1))}
               aria-label="Disminuir cantidad"
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-steel-200 text-steel-600 transition-colors hover:border-brand-300 hover:text-brand-700"
+              className="flex h-11 w-11 items-center justify-center rounded-xl border border-steel-200 text-steel-600 transition-colors hover:border-brand-300 hover:text-brand-700"
             >
               <svg viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-current stroke-2" aria-hidden>
                 <path strokeLinecap="round" d="M5 12h14" />
@@ -183,13 +183,13 @@ export function ProductPurchase({
               type="button"
               onClick={() => setSimpleQty((q) => q + 1)}
               aria-label="Aumentar cantidad"
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-brand-600 bg-brand-600 text-white transition-colors hover:bg-brand-700"
+              className="flex h-11 w-11 items-center justify-center rounded-xl border border-brand-600 bg-brand-600 text-white transition-colors hover:bg-brand-700"
             >
               <svg viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-current stroke-2" aria-hidden>
                 <path strokeLinecap="round" d="M12 5v14m7-7H5" />
               </svg>
             </button>
-            <span className="text-sm text-steel-500">
+            <span className="text-sm text-steel-600">
               {simpleQty === 1 ? "unidad" : "unidades"}
             </span>
           </div>
@@ -227,7 +227,7 @@ export function ProductPurchase({
         </button>
 
         {hasSizes && !canAdd && (
-          <p className="text-center text-xs text-steel-500">
+          <p className="text-center text-xs text-steel-600">
             Elige la cantidad de al menos una talla para agregar.
           </p>
         )}
@@ -241,7 +241,7 @@ export function ProductPurchase({
             <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current" aria-hidden>
               <path d="M17.47 14.38c-.29-.15-1.71-.84-1.97-.94-.26-.1-.46-.15-.65.15-.19.29-.75.94-.92 1.13-.17.19-.34.22-.63.07-.29-.15-1.22-.45-2.33-1.43-.86-.77-1.44-1.72-1.61-2.01-.17-.29-.02-.45.13-.59.13-.13.29-.34.44-.51.15-.17.19-.29.29-.48.1-.19.05-.36-.02-.51-.07-.15-.65-1.57-.89-2.15-.24-.57-.48-.49-.65-.5-.17-.01-.36-.01-.55-.01-.19 0-.51.07-.77.36-.26.29-1.01.99-1.01 2.41 0 1.42 1.03 2.79 1.18 2.98.15.19 2.03 3.1 4.92 4.35.69.3 1.22.47 1.64.6.69.22 1.31.19 1.81.12.55-.08 1.71-.7 1.95-1.37.24-.67.24-1.25.17-1.37-.07-.12-.26-.19-.55-.34zM12.04 2.5A9.5 9.5 0 0 0 2.55 12c0 1.67.44 3.31 1.27 4.75L2.5 21.5l4.87-1.28A9.46 9.46 0 0 0 12.04 21.5 9.5 9.5 0 0 0 21.5 12 9.5 9.5 0 0 0 12.04 2.5z" />
             </svg>
-            Ver mi cotización ({items.length}) y enviar
+            Ver mi cotización ({items.length})
           </button>
         )}
       </div>

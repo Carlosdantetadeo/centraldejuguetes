@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState, type TouchEvent } from "react";
 import type { ProductImage as ProductImageType } from "@prisma/client";
 
 type GalleryProps = {
@@ -10,6 +10,7 @@ type GalleryProps = {
 
 export function ProductGallery({ images, productName }: GalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
 
   if (images.length === 0) {
     return (
@@ -30,15 +31,40 @@ export function ProductGallery({ images, productName }: GalleryProps) {
   const prev = () => setActiveIndex((i) => (i - 1 + total) % total);
   const next = () => setActiveIndex((i) => (i + 1) % total);
 
+  // Swipe horizontal en móvil (F-08): solo cambia de imagen si el gesto es
+  // claramente más horizontal que vertical, para no robarle el scroll de la
+  // página a un swipe vertical.
+  function handleTouchStart(e: TouchEvent) {
+    const t = e.touches[0];
+    touchStart.current = { x: t.clientX, y: t.clientY };
+  }
+
+  function handleTouchEnd(e: TouchEvent) {
+    if (!touchStart.current) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - touchStart.current.x;
+    const dy = t.clientY - touchStart.current.y;
+    touchStart.current = null;
+    if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+    if (dx < 0) next();
+    else prev();
+  }
+
   return (
     <div>
       {/* Main image */}
-      <div className="group relative aspect-square overflow-hidden rounded-2xl bg-white ring-1 ring-steel-200">
+      <div
+        className="group relative aspect-square overflow-hidden rounded-2xl bg-white ring-1 ring-steel-200"
+        onTouchStart={total > 1 ? handleTouchStart : undefined}
+        onTouchEnd={total > 1 ? handleTouchEnd : undefined}
+      >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           key={mainImage.id}
           src={mainImage.pathFull}
           alt={mainImage.altText || productName}
+          width={800}
+          height={800}
           className="h-full w-full object-contain p-4 transition-opacity duration-200"
         />
 
@@ -94,6 +120,8 @@ export function ProductGallery({ images, productName }: GalleryProps) {
               <img
                 src={image.pathThumb}
                 alt={image.altText || `Imagen ${i + 1}`}
+                width={160}
+                height={160}
                 className="h-full w-full object-contain p-1.5"
               />
             </button>
