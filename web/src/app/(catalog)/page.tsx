@@ -209,16 +209,18 @@ export default async function HomePage({ searchParams }: PageProps) {
               />
             </>
           ) : (
-            // Banner ya diseñado con su propio texto: se muestra completo,
-            // sin recortar ni superponer título/subtítulo encima. Altura
-            // topeada (H-02): en móvil no debe ocupar toda la pantalla y
-            // tapar el catálogo que sigue debajo del pliegue.
+            // Banner ya diseñado con su propio texto, sin título/subtítulo
+            // superpuesto. Altura topeada (H-02): en móvil no debe ocupar
+            // toda la pantalla y tapar el catálogo que sigue debajo del
+            // pliegue. object-cover llena el ancho completo (sin barras a
+            // los costados); en pantallas muy anchas puede recortar los
+            // bordes del banner.
             /* eslint-disable-next-line @next/next/no-img-element */
             <img
               src={hero.imageUrl}
               alt=""
               aria-hidden="true"
-              className="mx-auto block h-auto max-h-[60vh] w-auto max-w-full"
+              className="block h-auto max-h-[60vh] w-full object-cover"
             />
           )
         ) : (
