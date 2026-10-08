@@ -378,6 +378,91 @@ export async function bulkImportAction(formData: FormData) {
   return results;
 }
 
+// Actualización masiva de stock/precio por SKU (no crea productos, solo
+// actualiza los existentes que coincidan). Cada fila puede traer stock,
+// precio, o ambos — la columna vacía en esa fila simplemente no se toca.
+export async function bulkUpdateStockAction(formData: FormData) {
+  await requireAdmin();
+
+  const csvText = formData.get("csv")?.toString();
+  if (!csvText?.trim()) {
+    return { error: "El archivo CSV está vacío." };
+  }
+
+  const lines = csvText.trim().split("\n");
+  if (lines.length < 2) {
+    return { error: "El CSV necesita una fila de encabezado y al menos un producto." };
+  }
+
+  const headers = lines[0].split(",").map((h) => h.trim().toLowerCase());
+  if (!headers.includes("sku")) {
+    return { error: 'Falta la columna "sku" en el CSV.' };
+  }
+  const hasStock = headers.includes("stock");
+  const hasPrice = headers.includes("price");
+  if (!hasStock && !hasPrice) {
+    return { error: 'El CSV necesita al menos una columna "stock" o "price".' };
+  }
+
+  const results: { updated: number; errors: string[] } = { updated: 0, errors: [] };
+
+  for (let i = 1; i < lines.length; i++) {
+    const cells = lines[i].split(",").map((c) => c.trim());
+    if (cells.every((c) => !c)) continue;
+    const row: Record<string, string> = {};
+    headers.forEach((h, idx) => { row[h] = cells[idx] ?? ""; });
+
+    const sku = row["sku"];
+    if (!sku) {
+      results.errors.push(`Fila ${i + 1}: falta el SKU`);
+      continue;
+    }
+
+    const data: { stock?: number; price?: number } = {};
+    if (hasStock && row["stock"] !== "") {
+      const stock = parseInt(row["stock"], 10);
+      if (Number.isNaN(stock) || stock < 0) {
+        results.errors.push(`Fila ${i + 1} (SKU ${sku}): stock inválido "${row["stock"]}"`);
+        continue;
+      }
+      data.stock = stock;
+    }
+    if (hasPrice && row["price"] !== "") {
+      const price = parseFloat(row["price"]);
+      if (Number.isNaN(price) || price < 0) {
+        results.errors.push(`Fila ${i + 1} (SKU ${sku}): precio inválido "${row["price"]}"`);
+        continue;
+      }
+      data.price = price;
+    }
+    if (Object.keys(data).length === 0) {
+      results.errors.push(`Fila ${i + 1} (SKU ${sku}): no trae stock ni precio para actualizar`);
+      continue;
+    }
+
+    const matches = await prisma.product.findMany({ where: { sku }, select: { id: true } });
+    if (matches.length === 0) {
+      results.errors.push(`Fila ${i + 1}: SKU "${sku}" no encontrado`);
+      continue;
+    }
+    if (matches.length > 1) {
+      results.errors.push(`Fila ${i + 1}: SKU "${sku}" tiene ${matches.length} productos con el mismo código, no se actualizó`);
+      continue;
+    }
+
+    try {
+      await prisma.product.update({ where: { id: matches[0].id }, data });
+      results.updated++;
+    } catch (err) {
+      results.errors.push(`Fila ${i + 1} (SKU ${sku}): ${err instanceof Error ? err.message : "error desconocido"}`);
+    }
+  }
+
+  revalidateCatalog();
+  revalidatePath("/admin/productos");
+  return results;
+}
+
 export async function saveTestimonialAction(formData: FormData) {
   await requireAdmin();
 
