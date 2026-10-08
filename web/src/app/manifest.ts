@@ -14,8 +14,10 @@ export default async function manifest(): Promise<MetadataRoute.Manifest> {
     orientation: "portrait",
     background_color: "#ffffff",
     theme_color: s.brandColor ?? "#d40000",
-    icons: s.logoUrl
-      ? [{ src: s.logoUrl, sizes: "any", type: "image/svg+xml", purpose: "any" as const }]
+    // El ícono de la PWA/home-screen debe ser cuadrado — el logo horizontal
+    // (logoUrl) se vería recortado/estirado. Usa el favicon cuadrado.
+    icons: s.faviconUrl
+      ? [{ src: s.faviconUrl, sizes: "512x512", type: "image/png", purpose: "any" as const }]
       : [],
   };
 }
