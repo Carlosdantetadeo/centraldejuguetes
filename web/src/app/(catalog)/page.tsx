@@ -73,6 +73,15 @@ export default async function HomePage({ searchParams }: PageProps) {
   // por sortOrder) — productos reales de esa categoría y sus subcategorías,
   // no un "más vendidos" inventado (no hay ventas/featured registrados
   // todavía). Se omite la categoría si no junta un mínimo de productos.
+  // Orden pedido para la home: Ciencia y Juego, Juegos de Mesa, Arte y
+  // Manualidades, Rompecabezas — el resto de categorías queda después, en
+  // su orden habitual (sortOrder).
+  const FEATURED_ORDER = [
+    "ciencia-y-juego",
+    "juegos-de-mesa-y-cartas",
+    "arte-manualidades-y-construccion",
+    "rompecabezas-e-ingenio",
+  ];
   const categoryCarousels = genderRaw
     .map((g) => {
       const slugs = new Set([g.slug, ...g.children.map((c) => c.slug)]);
@@ -81,7 +90,15 @@ export default async function HomePage({ searchParams }: PageProps) {
         .slice(0, 12);
       return { name: g.name, slug: g.slug, products };
     })
-    .filter((c) => c.products.length >= 4);
+    .filter((c) => c.products.length >= 4)
+    .sort((a, b) => {
+      const ai = FEATURED_ORDER.indexOf(a.slug);
+      const bi = FEATURED_ORDER.indexOf(b.slug);
+      if (ai === -1 && bi === -1) return 0;
+      if (ai === -1) return 1;
+      if (bi === -1) return -1;
+      return ai - bi;
+    });
 
   const categoryMap = new Map<string, CategoryOption>();
   for (const p of allProducts) {
@@ -338,33 +355,6 @@ export default async function HomePage({ searchParams }: PageProps) {
           </div>
           ) : (
             <div className="space-y-10">
-              {/* Recién llegados: señal real (fecha de alta) */}
-              {newArrivals.length > 0 && (
-                <ProductCarousel title="Recién llegados">
-                  {newArrivals.map((product) => (
-                    <div key={product.id} className="[scroll-snap-align:start]">
-                      <ProductCard
-                        id={product.id}
-                        name={product.name}
-                        sku={product.sku}
-                        slug={product.slug}
-                        categoryName={product.category.name}
-                        measure={product.measure}
-                        gauge={product.gauge}
-                        price={product.price}
-                        compareAtPrice={product.compareAtPrice}
-                        stock={product.stock}
-                        ageMin={product.ageMin}
-                        ageMax={product.ageMax}
-                        available={product.available}
-                        categorySlug={product.category.slug}
-                        image={product.images[0]}
-                      />
-                    </div>
-                  ))}
-                </ProductCarousel>
-              )}
-
               {/* Un carrusel por categoría — Ciencia y Juego primera */}
               {categoryCarousels.map((cat) => (
                 <ProductCarousel key={cat.slug} title={cat.name} viewAllHref={`/categoria/${cat.slug}`}>
@@ -392,6 +382,33 @@ export default async function HomePage({ searchParams }: PageProps) {
                   ))}
                 </ProductCarousel>
               ))}
+
+              {/* Recién llegados: señal real (fecha de alta) — al final */}
+              {newArrivals.length > 0 && (
+                <ProductCarousel title="Recién llegados">
+                  {newArrivals.map((product) => (
+                    <div key={product.id} className="[scroll-snap-align:start]">
+                      <ProductCard
+                        id={product.id}
+                        name={product.name}
+                        sku={product.sku}
+                        slug={product.slug}
+                        categoryName={product.category.name}
+                        measure={product.measure}
+                        gauge={product.gauge}
+                        price={product.price}
+                        compareAtPrice={product.compareAtPrice}
+                        stock={product.stock}
+                        ageMin={product.ageMin}
+                        ageMax={product.ageMax}
+                        available={product.available}
+                        categorySlug={product.category.slug}
+                        image={product.images[0]}
+                      />
+                    </div>
+                  ))}
+                </ProductCarousel>
+              )}
             </div>
           )}
           </>
