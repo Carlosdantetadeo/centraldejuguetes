@@ -357,7 +357,6 @@ export default async function HomePage({ searchParams }: PageProps) {
                         ageMin={product.ageMin}
                         ageMax={product.ageMax}
                         available={product.available}
-                  createdAt={product.createdAt}
                         categorySlug={product.category.slug}
                         image={product.images[0]}
                       />

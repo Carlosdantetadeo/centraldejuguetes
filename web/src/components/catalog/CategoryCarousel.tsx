@@ -81,8 +81,11 @@ export function CategoryCarousel({ categories }: { categories: CategoryItem[] })
       </button>
 
       {/* Indicador de scroll en móvil */}
-      <div className="mt-1 flex justify-center md:hidden" aria-hidden="true">
-        <span className="text-[10px] font-medium text-steel-400">Desliza para ver más →</span>
+      <div className="mt-1 flex items-center justify-center gap-1 md:hidden" aria-hidden="true">
+        <span className="text-[10px] font-medium text-steel-400">Desliza para ver más</span>
+        <svg viewBox="0 0 24 24" className="h-3 w-3 fill-none stroke-steel-400 stroke-2">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+        </svg>
       </div>
     </div>
   );

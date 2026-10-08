@@ -40,9 +40,13 @@ export function CategoryCard({
       </div>
       <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-brand-600">
         Ver productos
-        <span className="transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true">
-          →
-        </span>
+        <svg
+          viewBox="0 0 24 24"
+          className="h-3.5 w-3.5 fill-none stroke-current stroke-2 transition-transform duration-200 group-hover:translate-x-1"
+          aria-hidden="true"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+        </svg>
       </span>
     </Link>
   );

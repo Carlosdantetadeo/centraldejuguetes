@@ -57,9 +57,12 @@ export function ProductCarousel({
           {viewAllHref && (
             <Link
               href={viewAllHref}
-              className="text-sm font-semibold text-brand-600 hover:text-brand-700 hover:underline"
+              className="inline-flex items-center gap-1 text-sm font-semibold text-brand-600 hover:text-brand-700 hover:underline"
             >
-              Ver todo →
+              Ver todo
+              <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 fill-none stroke-current stroke-2" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+              </svg>
             </Link>
           )}
           <div className="flex items-center gap-1.5">
